@@ -107,3 +107,9 @@ Nothing empty is pre-created. Folders appear when a stage first writes to them.
 - **`walkthrough`** — an autonomous maintenance pass over a whole project, fenced to safe (Quick-Path) changes and routing anything bigger to a reviewed recommendations list. Delegates drift detection to `surveyor`.
 
 The order-of-operations for any single change isn't a skill — it lives as the **Change rules** in each project's `CLAUDE.md` (Quick Path / Full Path), so every skill follows the same doctrine without one having to call another.
+
+---
+
+## License
+
+[MIT](LICENSE) © 2026 BytesFromToby
