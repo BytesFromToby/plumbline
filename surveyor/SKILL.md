@@ -57,9 +57,9 @@ For each feature spec ↔ code pair:
 
 ---
 
-## Step 4 — Report findings
+## Step 4 — Gather findings
 
-Four categories. For each item give the spec file + section, what the spec says, and what the code actually does.
+Sort everything you find into four categories. For each item, capture the spec file + section, what the spec says, and what the code actually does — you'll need that detail for the report.
 
 **Drift** — spec says X, code does Y differently.
 - Spec section · what it says · what the code does.
@@ -72,16 +72,53 @@ Four categories. For each item give the spec file + section, what the spec says,
 
 **Untested automated criteria** — every `[automated]` Done-when item should have a committed test that encodes it (foreman plans it, builder writes it). For each `[automated]` item, check a test exists that targets it. List any with **no backing test**. This is the static counterpart to inspector's gap-flag: surveyor finds the missing test without running anything; inspector finds it by running. A `[human-required]` item is expected to have no test — never flag those.
 
----
-
-## Step 5 — Recommend, don't act
-
-For each finding, suggest exactly one of:
+For each finding, decide the recommendation — exactly one of:
 - **Fix the spec** (run **architect**) — the code is right, the spec is stale.
 - **Fix the code** (run **builder**, under the Change rules in CLAUDE.md) — the spec is right, the code drifted.
 - **Add the missing test** — for an untested `[automated]` item.
 - **Open question** — needs a human decision before either side moves.
 
-Make no changes. Report only, then hand off:
-- Drift or unbuilt features → "Run **architect** to reconcile the spec, or fix the code under the Change rules."
-- Clean → "Spec and code agree. No drift found."
+---
+
+## Step 5 — Write the survey
+
+Write the report to `output/surveys/Survey_YYYY-MM-DD.md` (create `output/surveys/` if it doesn't exist). If the survey was scoped to a single feature, name it `Survey_[feature]_YYYY-MM-DD.md`. If a survey already exists for today, append `_HHMM` rather than overwriting it — each run is a dated record.
+
+**Always write the file, even when clean** — a dated "no drift" record is the point. Drop any finding section that has no entries (mirrors inspector dropping empty sections).
+
+```
+# Survey — [project or feature] · YYYY-MM-DD
+Specs scanned: N (feature N · reference N · architecture N)
+Verdict: clean | N findings (Drift N · Unimplemented N · Undocumented N · Untested N)
+
+## Spec ↔ code map
+| Spec (class) | Code area | Result |
+|---|---|---|
+
+## Drift
+| Spec · section | Spec says | Code does | Recommend |
+|---|---|---|---|
+
+## Unimplemented
+| Spec · section | Behavior | Status | Recommend |
+|---|---|---|---|
+
+## Undocumented
+| Code | What it does | Recommend |
+|---|---|---|
+
+## Untested automated criteria
+| Spec · Done-when | Recommend |
+|---|---|
+
+## Recommendations
+1. [HIGH / MEDIUM / LOW] — action
+```
+
+---
+
+## Step 6 — Hand off
+
+Surveyor makes no changes to code or specs — it only reports. State the verdict inline and point at the file:
+- Findings → "Survey written to `output/surveys/Survey_[date].md` — [N] findings. Run **architect** to reconcile the spec, or fix the code under the Change rules."
+- Clean → "Survey written to `output/surveys/Survey_[date].md` — spec and code agree, no drift found."

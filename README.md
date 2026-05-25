@@ -84,6 +84,8 @@ Acceptance criteria live *inline in the spec*, attached to each feature — not 
 | `docs/changelog/` | Changelog |
 | `output/inspect/` | Inspector reports + evidence |
 | `output/deviations/` | Builder deviation rollups |
+| `output/surveys/` | Surveyor drift reports (`Survey_YYYY-MM-DD.md`) |
+| `output/walkthrough/` | Walkthrough log + recommendations (`…_YYYY-MM-DD.md`) |
 
 Nothing empty is pre-created. Folders appear when a stage first writes to them.
 

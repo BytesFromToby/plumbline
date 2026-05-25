@@ -15,7 +15,7 @@ Before starting, identify:
 1. **Project root** — the folder being walked
 2. **Test command** and **run/demo command** — from the project's CLAUDE.md
 3. **Specs folder** — `Planning/specs/` (the convention; fall back to `docs/specs/` if that's what the project uses)
-4. **Output folder** — `output/` in the project root (create it if missing)
+4. **Output folder** — `output/walkthrough/` in the project root (create it if missing). Both this run's files land here, dated.
 
 ---
 
@@ -24,7 +24,7 @@ Before starting, identify:
 - **Spec is truth.** If code disagrees with the spec, the spec wins.
 - **Autonomy is fenced by the Change rules in CLAUDE.md (Quick Path / Full Path).** Apply **Quick-Path** changes yourself (no new/removed files, no schema change, no core-logic change, nothing that needs a decision doc). Anything that is **Full-Path** — schema, core logic, new/renamed files, decisions worth recording — goes to **Recommendations**, not applied. Do not author decision docs unattended.
 - **Run the test command after every change.** If a change breaks tests and you can't fix it within the Quick-Path fence, revert it and log to Recommendations.
-- **Log everything** to `output/WalkthroughLog.md` as you go.
+- **Log everything** to `output/walkthrough/WalkthroughLog_YYYY-MM-DD.md` as you go.
 - **Commit nothing.** Leave all changes uncommitted for review.
 
 ---
@@ -59,7 +59,7 @@ Compile everything deferred into a prioritized list (format below).
 
 ---
 
-## Log Format (output/WalkthroughLog.md)
+## Log Format (output/walkthrough/WalkthroughLog_YYYY-MM-DD.md)
 
 ```
 ## Phase N — Title
@@ -73,7 +73,7 @@ Compile everything deferred into a prioritized list (format below).
 
 ---
 
-## Recommendations Format (output/Recommendations.md)
+## Recommendations Format (output/walkthrough/Recommendations_YYYY-MM-DD.md)
 
 ```
 ## Priority: HIGH / MEDIUM / LOW
