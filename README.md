@@ -6,7 +6,7 @@
 
 A small set of skills that take a feature from idea to *verified, working* code through five single-responsibility stages. Each stage is run by an AI agent. The stages never call each other — they coordinate through files and folders, so any stage can run on its own, and the spec stays the single source of truth from the first interview to the final sign-off.
 
-This repo is as much about *how it's designed* as what it does. The interesting part isn't the skills — it's the seams between them, and the choices about what each stage is and isn't allowed to do.
+The design choice that matters: stages coordinate only through files, and each one is forbidden from doing the next one's job. `inspector` can't edit the spec to make a test pass; `builder` can't invent requirements the spec doesn't have. The boundaries are what keep it honest.
 
 ## Current Status
 
