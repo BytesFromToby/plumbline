@@ -10,7 +10,7 @@ The design choice that matters: stages coordinate only through files, and each o
 
 ## Current Status
 
-This is built for a solo developer's own projects, and it's been run end-to-end on real features — spec through signed-off code — not just designed on paper. It's deliberately strongest on *reliability* and *repeatability*; the lighter-weight path for very small features is still being tuned, and the machinery for restructuring a spec once a project gets large is specified but intentionally not yet built. It grows when a real project makes a gap hurt — not before.
+This is built for a solo developer's own projects, and it's been run end-to-end on real features — spec through signed-off code — not just designed on paper. It's deliberately strongest on *reliability* and *repeatability*. A recent real-world retrofit — a medium-sized project pulled into these conventions — shaped the current model: the **stage progression** (experimental → useful → big) and a **`git | local` history mode**. Moving a project across those stage boundaries — init git, split a growing spec, extract a reference tier — is for now done **by hand**; folding that into a dedicated skill is a known next step, not part of this version. The framework grows when a real project makes a gap hurt — not before.
 
 ---
 
@@ -25,13 +25,15 @@ scaffold ──▶ architect ──▶ foreman ──▶ builder ──▶ inspe
 
 | Stage | Owns | Produces |
 |-------|------|----------|
-| **scaffold** | Bootstrapping a project (run once) | Folder conventions, a `CLAUDE.md` contract, a spec template |
+| **scaffold** | Bootstrapping a greenfield project (run once) | The folder skeleton + a `CLAUDE.md` contract |
 | **architect** | Defining *what* to build | `Planning/specs/[feature]_spec.md` with inline acceptance criteria, a decision log |
 | **foreman** | Planning *how* to build it | `Planning/blueprints/[feature]_BP.md` — slices of ordered steps |
 | **builder** | Writing the code | Code + tests, executed one slice at a time, with a deviation log |
 | **inspector** | Proving it works | An evidence report; a dated PASS/FAIL stamp on the blueprint |
 
 Each stage hands off through the filesystem. The user approves between stages — the agent does the work, the human stays the judge.
+
+A project grows through stages — **experimental** (loose files, no git) → **useful** (git + structure) → **big** (split specs, reference tier, architecture doc). `scaffold` starts a project clean at the first stage; graduating it across the later boundaries — init git, split a monolith spec, extract the reference tier — is currently a **manual** step. (Automating those transitions in a dedicated skill is a planned addition, not part of this version.)
 
 ---
 
@@ -74,32 +76,39 @@ Acceptance criteria live *inline in the spec*, attached to each feature — not 
 
 ## Folder conventions
 
+**`Planning/` = the living plan · `docs/` = the record & reference · `output/` = skill output.**
+
 | Path | Holds |
 |------|-------|
 | `Planning/specs/[feature]_spec.md` | Specs — the source of truth |
-| `Planning/specs/archive/` | Superseded spec versions |
+| `Planning/reference/` | Shared definitions specs cite (data models, constants) |
 | `Planning/blueprints/[feature]_BP.md` | Per-feature build plans |
-| `Planning/decisions/` | Decision logs |
-| `Planning/reference/` | Glossary, data models — created only when a project grows large enough to need them |
-| `docs/changelog/` | Changelog |
+| `docs/decisions/` | Decision logs (append-only) |
+| `docs/changelog/` | Changelog — `local` history mode only |
+| `docs/architecture.md` | The as-built system map — written once modules need one |
 | `output/inspect/` | Inspector reports + evidence |
 | `output/deviations/` | Builder deviation rollups |
 | `output/surveys/` | Surveyor drift reports (`Survey_YYYY-MM-DD.md`) |
 | `output/walkthrough/` | Walkthrough log + recommendations (`…_YYYY-MM-DD.md`) |
 
-Nothing empty is pre-created. Folders appear when a stage first writes to them.
+`scaffold` lays the full folder skeleton up front as guide-rails. **History mode:** a fresh
+project starts `local` (history lives in `docs/changelog/` + `docs/decisions/`, no git); when it
+proves useful, you flip it to `git` by hand — init the repo and shed the changelog (git becomes the history).
 
 ---
 
 ## The CLAUDE.md contract
 
-`scaffold` writes these declarations into each project; every skill reads them:
+`scaffold` writes a single `CLAUDE.md` contract into each project; every skill reads it. It carries:
 
-- **Test command** — how tests run.
-- **Run/demo command** — how to launch the thing so behaviour is *visible*. `inspector` depends on this being real.
-- **UI evidence tool** (web stacks only) — how `inspector` drives the UI and captures screenshots.
-- **Spec/blueprint naming** — so every stage finds the same files.
-- **Change rules** — the Quick Path / Full Path for any code change, and who owns the changelog and decision docs. This is doctrine every skill reads, not a skill you invoke.
+- **Identity** — one line on what the project is and why.
+- **Stack + Commands** — the test command and the run/demo command (must be *real* — `inspector` depends on it), plus a UI-evidence tool for web stacks.
+- **History mode** — `local` (history in `docs/changelog/` + `docs/decisions/`) or `git` (git log is the history); flipping `local → git` is a manual step.
+- **Where things live** — the folder map, so a reader or agent orients without spelunking.
+- **Change rules** — the Quick Path / Full Path for any change. Branches on history mode (`local` adds a changelog entry, `git` commits). Doctrine every skill reads, not a skill you invoke.
+- **How to work here** + the skills flow.
+
+The spec *format* isn't copied into the contract — it's authoritative in `architect` (which writes specs), so there's no separate template to drift.
 
 ---
 

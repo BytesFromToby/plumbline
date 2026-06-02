@@ -24,7 +24,7 @@ Surveyor is **static**. It reads the spec and the code and compares them — it 
 
 Look for the specs folder. The framework convention is `Planning/specs/`. Fall back to `docs/specs/` or `specs/` only if that's what the project actually uses.
 
-When listing spec files, **exclude `_TEMPLATE.md` and anything under `archive/`** — the template is a blank form and archived specs are superseded. Neither is live truth.
+When listing spec files, **exclude any legacy `_TEMPLATE.md` or `archive/`** if present — older projects may still have them (current scaffold/architect no longer create either). Neither is live truth.
 
 If no specs folder exists, report **no specs found** and stop.
 
@@ -32,11 +32,11 @@ If no specs folder exists, report **no specs found** and stop.
 
 ## Step 2 — Classify each spec, then map it to code
 
-The framework has three document classes (see `Planning/specs/spec-lifecycle_spec.md`). Treat them differently:
+The framework has three document classes. Treat them differently:
 
 - **Feature spec** — has `**Done when:**` items. This is what you check for drift and test backing.
 - **Reference doc** (`Planning/reference/` — glossary, data models, constants) — definitional, no Done-when. Do **not** flag it for "having nothing testable." Check only that the terms/models it defines are still the ones the code and feature specs use.
-- **Architecture doc** (`Planning/architecture.md`) — the high-level map. No Done-when. Check only that the modules it describes still exist.
+- **Architecture doc** (`docs/architecture.md`) — the high-level map. No Done-when. Check only that the modules it describes still exist.
 
 For each **feature spec**, identify the code area it covers from its title and `## Feature:` blocks. Build a mapping:
 

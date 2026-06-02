@@ -76,7 +76,7 @@ If a criterion can't be made observable even after rewriting, it isn't a Done-wh
 
 ## Step 3 — Write the spec
 
-**If updating an existing spec:** before writing, copy the current file to `Planning/specs/archive/[feature]_spec_YYYY-MM-DD.md`. Create `Planning/specs/archive/` if it doesn't exist. Then overwrite the live spec.
+**If updating an existing spec:** overwrite it in place. Prior versions live in git history; in `local` history mode they're intentionally not kept (small projects edit specs in place).
 
 Write to `Planning/specs/[feature]_spec.md`. Create `Planning/specs/` if it doesn't exist.
 
@@ -113,7 +113,7 @@ Use this format exactly. Inspector reads the literal `**Done when:**` heading an
 
 ## Step 4 — Write the decision log
 
-Write `Planning/decisions/[feature]_YYYY-MM-DD.md`:
+Write `docs/decisions/[feature]_YYYY-MM-DD.md`:
 
 ```
 # Decisions: [Feature Name]
@@ -142,7 +142,7 @@ If the project spec exceeds **6 features or ~500 lines**, or any single feature 
 - **Near done / staying small:** note nothing, proceed.
 - **Big project:** record a one-line **Pending: restructure** note in the decision log so it isn't lost. The restructure itself is a separate, later action — out of scope for architect.
 
-Thresholds are tunable defaults, not law. This check is the only place architect touches the grow-then-split lifecycle; see `Planning/specs/spec-lifecycle_spec.md`.
+Thresholds are tunable defaults, not law. This check is the only place architect touches the grow-then-split lifecycle.
 
 ---
 
@@ -150,6 +150,6 @@ Thresholds are tunable defaults, not law. This check is the only place architect
 
 After writing, tell the user:
 1. Review the spec at `Planning/specs/[feature]_spec.md`
-2. Review decisions at `Planning/decisions/[feature]_YYYY-MM-DD.md`
+2. Review decisions at `docs/decisions/[feature]_YYYY-MM-DD.md`
 3. Resolve any Open Questions before proceeding
 4. Run **foreman** to generate the blueprint from this spec
