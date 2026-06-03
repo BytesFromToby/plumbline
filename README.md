@@ -2,6 +2,8 @@
 
 *To build a house well you follow the plans, double-check the work, and keep everything plumb. The plumb line is the builder's reference of truth — here, your spec is that line.*
 
+![Plumbline workflow: scaffold → architect → foreman → builder → inspector, each stage producing its artifact and ending in a verified PASS.](demo_diagram.gif)
+
 ## Description
 
 A "trust, but verify" set of agent skills that build code in a trackable way — even reporting their own deviations as they go — for better, more accountable coding.
