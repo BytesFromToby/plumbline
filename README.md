@@ -2,8 +2,6 @@
 
 *To build a house well you follow the plans, double-check the work, and keep everything plumb. The plumb line is the builder's reference of truth — here, your spec is that line.*
 
-![Plumbline in action: a plain-language prompt driven through scaffold, architect, foreman, builder, and inspector into verified, working code.](demo.gif)
-
 ## Description
 
 A "trust, but verify" set of agent skills that build code in a trackable way — even reporting their own deviations as they go — for better, more accountable coding.
