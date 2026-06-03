@@ -1,20 +1,28 @@
 # Plumbline — a spec-driven workflow of AI-agent skills
 
-*A plumb line is the builder's reference of truth — the vertical everything is checked against. Here, the spec is that line.*
+*To build a house well you follow the plans, double-check the work, and keep everything plumb. The plumb line is the builder's reference of truth — here, your spec is that line.*
+
+![Plumbline in action: a plain-language prompt driven through scaffold, architect, foreman, builder, and inspector into verified, working code.](demo.gif)
 
 ## Description
 
-A small set of skills that take a feature from idea to *verified, working* code through five single-responsibility stages. Each stage is run by an AI agent. The stages never call each other — they coordinate through files and folders, so any stage can run on its own, and the spec stays the single source of truth from the first interview to the final sign-off.
+A "trust, but verify" set of agent skills that build code in a trackable way — even reporting their own deviations as they go — for better, more accountable coding.
 
-The design choice that matters: stages coordinate only through files, and each one is forbidden from doing the next one's job. `inspector` can't edit the spec to make a test pass; `builder` can't invent requirements the spec doesn't have. The boundaries are what keep it honest.
+- **Agents build, you approve.** The work runs across five single-responsibility stages — first interview to signed-off code — and stops for your sign-off at each handoff.
+- **No stage does the next one's job.** `inspector` can't edit the spec to pass a test; `builder` can't invent requirements. Those boundaries are what keep it honest.
+- **Coordinated by files, not calls.** Stages never call each other, so any one runs on its own — and the spec stays the single source of truth end to end.
+- **Inspectable, not trusted.** A deviation log records where the build left the plan; test evidence backs every "done."
+- **Two modes.** The same conventions also power an autonomous maintenance loop that keeps a built project aligned to its spec over time.
 
-## Current Status
-
-This is built for a solo developer's own projects, and it's been run end-to-end on real features — spec through signed-off code — not just designed on paper. It's deliberately strongest on *reliability* and *repeatability*. A recent real-world retrofit — a medium-sized project pulled into these conventions — shaped the current model: the **stage progression** (experimental → useful → big) and a **`git | local` history mode**. Moving a project across those stage boundaries — init git, split a growing spec, extract a reference tier — is for now done **by hand**; folding that into a dedicated skill is a known next step, not part of this version. The framework grows when a real project makes a gap hurt — not before.
+*Built for a solo developer's real projects — and run end-to-end on real features, spec through signed-off code, not just designed on paper.*
 
 ---
 
-## The lifecycle
+## Two modes: build, then maintain
+
+Plumbline runs in two directions. **Build** takes an idea to verified code through five forward stages. **Maintain** keeps an already-built project honest over time, on its own. The two share the same spec, the same file conventions, and one skill — `inspector` — that does duty in both.
+
+### Build — idea to verified code
 
 ```
 scaffold ──▶ architect ──▶ foreman ──▶ builder ──▶ inspector
@@ -34,6 +42,28 @@ scaffold ──▶ architect ──▶ foreman ──▶ builder ──▶ inspe
 Each stage hands off through the filesystem. The user approves between stages — the agent does the work, the human stays the judge.
 
 A project grows through stages — **experimental** (loose files, no git) → **useful** (git + structure) → **big** (split specs, reference tier, architecture doc). `scaffold` starts a project clean at the first stage; graduating it across the later boundaries — init git, split a monolith spec, extract the reference tier — is currently a **manual** step. (Automating those transitions in a dedicated skill is a planned addition, not part of this version.)
+
+### Maintain — keep a built project honest
+
+Once code exists, `walkthrough` is the autonomous counterpart to the build lifecycle: run it and walk away. It works a project end-to-end — baseline, drift, coverage, docs — applying only changes safe enough to make unattended and routing everything else to a list you approve. It doesn't reimplement the checks it needs; it calls the same skills the build mode uses.
+
+```
+walkthrough  ── one autonomous session, fenced to safe changes ──
+   │
+   ├─ calls ─▶ surveyor    static: spec-vs-code drift
+   ├─ calls ─▶ inspector   runtime: proof against the Done-when items
+   │
+   ├─▶ Quick-Path fixes ........ applied in place, tests re-run after each
+   └─▶ everything larger ....... a dated, prioritized Recommendations list
+```
+
+| Skill | Owns | Produces |
+|-------|------|----------|
+| **walkthrough** | An autonomous maintenance session (no check-ins, commits nothing) | Quick-Path fixes applied + `output/walkthrough/Recommendations_YYYY-MM-DD.md` |
+| **surveyor** | Static spec-vs-code drift — reads and compares, never runs the software | A dated `output/surveys/Survey_YYYY-MM-DD.md` (written even when clean) |
+| **inspector** | Runtime proof against the spec — *the same skill the build lifecycle ends on* | An evidence report in `output/inspect/` |
+
+`surveyor` and `inspector` also run standalone — `surveyor` before a feature or after a refactor when you just want a drift report; `inspector` to sign off a single slice. `walkthrough` is the hands-off orchestration of both, fenced by the **Change rules** in `CLAUDE.md`: it applies Quick-Path fixes itself and never authors a decision doc or touches a schema unattended.
 
 ---
 
@@ -112,12 +142,9 @@ The spec *format* isn't copied into the contract — it's authoritative in `arch
 
 ---
 
-## Supporting skills (run when useful, not every cycle)
+## Not a skill: the order of operations
 
-- **`surveyor`** — a static spec-vs-code drift report. Reads and compares, never runs the software (that's `inspector`'s job). Cheap; catches divergence after a refactor, and flags `[automated]` Done-when items with no backing test.
-- **`walkthrough`** — an autonomous maintenance pass over a whole project, fenced to safe (Quick-Path) changes and routing anything bigger to a reviewed recommendations list. Delegates drift detection to `surveyor`.
-
-The order-of-operations for any single change isn't a skill — it lives as the **Change rules** in each project's `CLAUDE.md` (Quick Path / Full Path), so every skill follows the same doctrine without one having to call another.
+The sequence for any *single* change isn't a stage you invoke — it lives as the **Change rules** in each project's `CLAUDE.md` (Quick Path for trivia, Full Path for features and schema). Every skill reads the same doctrine, so the workflow stays consistent without one skill ever having to call another.
 
 ---
 
