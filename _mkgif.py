@@ -175,18 +175,6 @@ animate_chain(BUILD, caption="", baton_text="passing the baton . . .",
               final_color=GREEN, hold_ms=1600)
 save_gif("demo_diagram.gif")
 
-# ---- contractor.gif — one pass, one gate ----
-frames, durs = [], []
-add(render(BUILD, None, set(), {}, set(), "one prompt — the whole build, one gate . . .",
-           MUTED, caption="contractor"), 850)
-animate_chain(BUILD, caption="contractor · one session, one gate",
-              baton_text="building . . .", activate_ms=95, settle_ms=260,
-              final_status="one command  —  stops once, at the spec",
-              final_color=GREEN, hold_ms=1700,
-              gate=1, gate_text="you approve", gate_hold_ms=950,
-              baton_fracs=(0.5, 1.0), baton_ms=50)
-save_gif("contractor.gif")
-
 # ---- walkthrough.gif — maintain mode, unattended ----
 frames, durs = [], []
 add(render(WALK, None, set(), {}, set(), "point it at a built project — then walk away . . .",
@@ -196,12 +184,3 @@ animate_chain(WALK, caption="walkthrough · maintain mode",
               final_status="Quick-Path fixes applied  ·  Recommendations for review",
               final_color=GREEN, hold_ms=1700)
 save_gif("walkthrough.gif")
-
-# ---- stills for review ----
-render(BUILD, None, set(range(5)), {k: 1.0 for k in range(4)}, set(range(5)),
-       "trust, but verify  —  idea to verified, working code", GREEN, final=True).save("_p_demo.png")
-render(BUILD, 1, {0}, {0: 1.0}, {0, 1}, "stop — you approve the spec", GATE,
-       caption="contractor · one session, one gate", gate=1, gate_text="you approve").save("_p_contractor.png")
-render(WALK, None, set(range(3)), {k: 1.0 for k in range(2)}, set(range(3)),
-       "Quick-Path fixes applied  ·  Recommendations for review", GREEN, final=True,
-       caption="walkthrough · maintain mode").save("_p_walk.png")
