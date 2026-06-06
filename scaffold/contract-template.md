@@ -11,6 +11,7 @@ One line: *what this is and why it exists.* ← scaffold should prompt for this.
 ## Commands
 - Test: `[test command]`
 - Run/demo: `[how to launch it so behaviour is visible]`
+- Shell/OS: `[e.g. PowerShell on Windows]` — write all Test and Run commands in this dialect
 <!-- UI-evidence tool: `playwright (python)` — add only if there's a browser frontend. -->
 
 ## History: local

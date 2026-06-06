@@ -12,7 +12,7 @@ A "trust, but verify" set of agent skills that build code in a trackable way —
 - **No stage does the next one's job.** `inspector` can't edit the spec to pass a test; `builder` can't invent requirements. Those boundaries are what keep it honest.
 - **Coordinated by files, not calls.** Stages never call each other, so any one runs on its own — and the spec stays the single source of truth end to end.
 - **Inspectable, not trusted.** A deviation log records where the build left the plan; test evidence backs every "done."
-- **Two modes.** The same conventions also power an autonomous maintenance loop that keeps a built project aligned to its spec over time.
+- **Two modes, each with an orchestrator.** `contractor` takes an idea to verified code in one pass (stopping once, at the spec); `walkthrough` keeps a built project aligned to its spec, unattended. Both drive the same single-responsibility skills rather than reimplementing them.
 
 *Built for a solo developer's real projects — and run end-to-end on real features, spec through signed-off code, not just designed on paper.*
 
@@ -43,9 +43,25 @@ Each stage hands off through the filesystem. The user approves between stages �
 
 A project grows through stages — **experimental** (loose files, no git) → **useful** (git + structure) → **big** (split specs, reference tier, architecture doc). `scaffold` starts a project clean at the first stage; graduating it across the later boundaries — init git, split a monolith spec, extract the reference tier — is currently a **manual** step. (Automating those transitions in a dedicated skill is a planned addition, not part of this version.)
 
+**Or hand the whole job to the contractor.** `contractor` is the build-mode orchestrator — the counterpart to `walkthrough`. It runs the five stages in one session, stopping exactly once, at the spec, then building, testing, and proving on its own:
+
+```
+contractor  ── one session: idea to verified code, a single gate ──
+   │
+   ├─ calls ─▶ scaffold ..... greenfield skeleton + CLAUDE.md (once)
+   ├─ calls ─▶ architect .... interviews you, writes the spec   ◀── you approve here
+   ├─ calls ─▶ foreman ...... breaks the spec into a blueprint
+   ├─ calls ─▶ builder ...... every slice, building till the tests pass
+   └─ calls ─▶ inspector .... fresh-eyes proof, as a separate subagent
+```
+
+It keeps the one gate that earns its place and drops the rest — but it never papers over trouble: a `builder` that gets stuck, an unresolved Open Question, or a failed inspection halts the run and surfaces it. And it can't grade its own work — `inspector` always runs as a separate agent, so the proof stays independent. Like `walkthrough`, it reimplements nothing; it only sequences.
+
 ### Maintain — keep a built project honest
 
-Once code exists, `walkthrough` is the autonomous counterpart to the build lifecycle: run it and walk away. It works a project end-to-end — baseline, drift, coverage, docs — applying only changes safe enough to make unattended and routing everything else to a list you approve. It doesn't reimplement the checks it needs; it calls the same skills the build mode uses.
+Once code exists, `walkthrough` takes over — the maintain-mode orchestrator, what `contractor` is to building turned toward upkeep: run it and walk away. It works a project end-to-end — baseline, drift, coverage, docs — applying only changes safe enough to make unattended and routing everything else to a list you approve. It doesn't reimplement the checks it needs; it calls the same skills the build mode uses.
+
+![Walkthrough: one autonomous maintenance session — walkthrough calls surveyor then inspector, applies Quick-Path fixes in place, and routes everything larger to a dated Recommendations list.](walkthrough.gif)
 
 ```
 walkthrough  ── one autonomous session, fenced to safe changes ──
@@ -72,7 +88,7 @@ walkthrough  ── one autonomous session, fenced to safe changes ──
 - **The spec is the spine.** `architect` writes it, `builder` checks its work against it, `inspector` verifies the running software against it. The blueprint in the middle is a disposable plan; the spec is truth at both ends *and* in the middle.
 - **Evidence over assertion.** "Done" means *shown* to work. `inspector` runs the software and captures output — a bare "PASS" is not evidence.
 - **Independence is structural, not promised.** `inspector` runs with fresh eyes — ideally as a separate agent that never saw the build — so "no stake in the outcome" is enforced by isolation, not by good intentions.
-- **Convention-coupled, not call-coupled.** Skills share documented file contracts (the `CLAUDE.md` declarations + folder layout), never direct calls. They're sequenced by data dependency, not by a hard-wired chain.
+- **Convention-coupled, not call-coupled.** The single-responsibility skills never call each other — they share documented file contracts (the `CLAUDE.md` declarations + folder layout) and are sequenced by data dependency, not a hard-wired chain. The two orchestrators (`contractor`, `walkthrough`) *do* invoke them, but only to sequence — they reimplement nothing, so every skill stays independently runnable.
 - **Proportional ceremony.** A one-line fix doesn't get a decision doc; a schema change does. `architect` sizes its interview to the work; the **Change rules** in each project's `CLAUDE.md` give trivia a Quick Path and reserve the Full Path for features and schema.
 - **Gates must earn their place.** Every stop, check, and document exists to catch a specific failure. The ones that don't get cut — this framework has been pruned as hard as it's been built.
 
