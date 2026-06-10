@@ -1,6 +1,7 @@
 ---
 name: architect
 description: Interviews the user to fully define a feature or project, then writes the spec. Run at the start of any new feature or project, or to update an existing spec. Also flags (does not perform) a restructure when the spec or a single feature grows too large.
+version: 1.0
 ---
 
 ## When to use this skill
@@ -76,7 +77,7 @@ If a criterion can't be made observable even after rewriting, it isn't a Done-wh
 
 ## Step 3 — Write the spec
 
-**If updating an existing spec:** overwrite it in place. Prior versions live in git history; in `local` history mode they're intentionally not kept (small projects edit specs in place).
+**If updating an existing spec:** overwrite it in place. Prior versions live in git history.
 
 Write to `Planning/specs/[feature]_spec.md`. Create `Planning/specs/` if it doesn't exist.
 

@@ -1,9 +1,11 @@
-<!-- The CLAUDE.md contract scaffold emits (R3 — agreed 2026-05-25, refined live on a test project).
-     Fill the [bracketed] bits. This is the "rich" replacement for the old light template. -->
+<!-- The CLAUDE.md contract scaffold emits (R4 — 2026-06-10: git from birth, Builder grade,
+     version stamp; supersedes R3 2026-05-25). Fill the [bracketed] bits. -->
 
 # [Project Name]
 
 One line: *what this is and why it exists.* ← scaffold should prompt for this.
+
+Plumbline: v1.0
 
 ## Stack
 [language / framework]
@@ -12,12 +14,15 @@ One line: *what this is and why it exists.* ← scaffold should prompt for this.
 - Test: `[test command]`
 - Run/demo: `[how to launch it so behaviour is visible]`
 - Shell/OS: `[e.g. PowerShell on Windows]` — write all Test and Run commands in this dialect
+- Builder grade: `economy` — foreman grinds blueprints fine for this grade (exact addresses,
+  one small move per step). Set `frontier` if builds run on a top-tier model and steps may be
+  goal-level.
 <!-- UI-evidence tool: `playwright (python)` — add only if there's a browser frontend. -->
 
-## History: local
-No git yet (experimental/small). History lives in `docs/changelog/` + `docs/decisions/`.
-**When this project proves useful, graduate it to `git` by hand** — init the repo and shed the
-manual changelog (git becomes the history).
+## History: git
+History is the git log — scaffold ran `git init` at birth. Commit each change with a clear
+message; there is no separate changelog. *Why* a non-obvious choice was made goes to
+`docs/decisions/`; *what changed when* is the log's job.
 
 ## Where things live
 | Path | Holds |
@@ -26,7 +31,6 @@ manual changelog (git becomes the history).
 | `Planning/reference/` | Shared definitions specs cite (data models, constants) — fills as specs need it |
 | `Planning/blueprints/` | `foreman`'s per-feature build plans |
 | `docs/decisions/` | Why a non-obvious choice was made (`YYYY-MM-DD-title.md`, append-only) |
-| `docs/changelog/` | What changed, by date (local mode only) |
 | `output/` | Skill output — `inspector` evidence, etc. |
 | `docs/architecture.md` | The as-built system map — written once modules need one |
 
@@ -37,18 +41,18 @@ manual changelog (git becomes the history).
 is authoritative in `architect/SKILL.md`.
 
 ## Change rules
-Every code/data/structure change picks a path. History mode is **local** (see above).
+Every code/data/structure change picks a path. History lives in **git** — each path ends in a commit.
 
-**Quick Path** — no files added/removed/renamed, no schema/core-logic change, nothing a
-future reader needs explained:
-1. Write/edit the code  2. Run the test command  3. Add a `docs/changelog/changelog.md` entry under today's date
+**Quick Path** — no files added/removed/renamed (new *test* files excepted — those are
+Quick Path), no schema/core-logic change, nothing a future reader needs explained:
+1. Write/edit the code  2. Run the test command  3. Commit
 
 **Full Path** — everything else:
 1. Update the spec (if the change reshapes it, run `architect`)  2. Write/edit the code
 3. Run the test command  4. Run `inspector` if tracked by a blueprint
 5. Update this file's "Where things live" if files moved
 6. Write a decision doc to `docs/decisions/` if a non-obvious choice was made
-7. Add a `docs/changelog/changelog.md` entry
+7. Commit
 
 ## How to work here
 - Write in plain, clear language.
@@ -57,8 +61,11 @@ future reader needs explained:
 
 ## Skills
 `scaffold` (done) → `architect` (spec) → `foreman` → `builder` (code) → `inspector`.
-- **blueprint** (`foreman`) — an ordered build plan built for the AI builder: slices of steps, one concern each.
+- **blueprint** (`foreman`) — an ordered build plan built for the AI builder: slices of steps,
+  one concern each; risky slices flagged `[inspect]` for a mid-slice inspector stop.
 - **proof** (`inspector`) — runs the software and captures evidence that each **Done when:**
-  item actually holds; stamps PASS/FAIL. "Done" means *shown* to work, not asserted.
+  item actually holds; judges whether each committed test could actually fail; stamps PASS/FAIL.
+  "Done" means *shown* to work, not asserted.
 
-When the project grows, graduating it (init git, split specs into per-feature files, extract a reference tier) is a manual step for now.
+When the project grows, graduating it (split specs into per-feature files, extract a reference
+tier, add `docs/architecture.md`) is a manual step for now.
