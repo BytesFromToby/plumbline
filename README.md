@@ -97,10 +97,13 @@ economy model a dependable builder.
 | `inspector` | strong | judges evidence and test fidelity; the last line of defense, never the place to save money |
 
 The blueprint's granularity isn't ceremony — it's the exchange rate. The finer the foreman
-plans, the cheaper the builder can be. Each project's `CLAUDE.md` carries a `Builder grade:`
-line (`economy` by default) that tells `foreman` how fine to grind; `walkthrough` reads the
-accumulated deviation logs and recommends adjusting it when the grain and the model are
-mismatched — the framework tunes itself on evidence, not anyone's self-assessment.
+plans, the cheaper the builder can be. And because the builder model can differ from run to run
+on the same project — it's not a known, stable thing — `foreman` always plans for the weakest
+builder that might show up: a strong model following fine steps loses minutes, a weak model
+improvising through coarse steps loses the build. `walkthrough` reads the accumulated deviation
+logs as plan-quality evidence (trivial-deviation noise → the blueprint pinned tactics that
+didn't matter; repeated stucks → it left addresses thin) — the framework improves its plans on
+evidence, not anyone's self-assessment.
 
 ---
 
@@ -175,7 +178,6 @@ the history from day one; `docs/decisions/` carries the why.
 
 - **Identity** — one line on what the project is and why.
 - **Stack + Commands** — the test command and the run/demo command (must be *real* — `inspector` depends on it), plus a UI-evidence tool for web stacks.
-- **Builder grade** — `economy` (default) or `frontier`; tells `foreman` how fine to grind the blueprint for the model that will build.
 - **History** — git, from scaffold onward; the log is the history, `docs/decisions/` the rationale.
 - **Where things live** — the folder map, so a reader or agent orients without spelunking.
 - **Change rules** — the Quick Path / Full Path for any change (new *test* files are the one Quick-Path file-creation exception). Doctrine every skill reads, not a skill you invoke.

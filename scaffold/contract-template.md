@@ -1,5 +1,5 @@
-<!-- The CLAUDE.md contract scaffold emits (R4 — 2026-06-10: git from birth, Builder grade,
-     version stamp; supersedes R3 2026-05-25). Fill the [bracketed] bits. -->
+<!-- The CLAUDE.md contract scaffold emits (R4 — 2026-06-10: git from birth, version stamp;
+     supersedes R3 2026-05-25). Fill the [bracketed] bits. -->
 
 # [Project Name]
 
@@ -14,9 +14,6 @@ Plumbline: v1.0
 - Test: `[test command]`
 - Run/demo: `[how to launch it so behaviour is visible]`
 - Shell/OS: `[e.g. PowerShell on Windows]` — write all Test and Run commands in this dialect
-- Builder grade: `economy` — foreman grinds blueprints fine for this grade (exact addresses,
-  one small move per step). Set `frontier` if builds run on a top-tier model and steps may be
-  goal-level.
 <!-- UI-evidence tool: `playwright (python)` — add only if there's a browser frontend. -->
 
 ## History: git

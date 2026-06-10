@@ -1,6 +1,6 @@
 ---
 name: scaffold
-description: Bootstrap a greenfield project — git init, the full convention folder skeleton, and a CLAUDE.md contract (stack, commands, builder grade, change rules). Run once at the start.
+description: Bootstrap a greenfield project — git init, the full convention folder skeleton, and a CLAUDE.md contract (stack, commands, change rules). Run once at the start.
 version: 1.0
 ---
 
@@ -62,11 +62,6 @@ The run/demo command is what `inspector` depends on, so it must be real — not 
 If the run/demo command launches a **web UI**, also record a **UI evidence tool** — default
 `playwright (python)`. Omit that line for non-UI stacks (CLI, library, API).
 
-Also set the **Builder grade** — `economy` (default) or `frontier`. It tells `foreman` how fine
-to grind the blueprint: economy models get exact addresses and one small move per step; a
-frontier builder may take goal-level steps. Default to `economy` unless the user says otherwise —
-over-specified steps cost minutes, under-specified ones cost wrong builds.
-
 ---
 
 ## Step 3 — Create folders and init git
@@ -84,7 +79,7 @@ when" lives in the log.
 
 Create `CLAUDE.md` from **`scaffold/contract-template.md`** (the canonical contract — do not
 re-invent it inline). Fill the bracketed fields: project name, the one-line identity, stack,
-the two commands (add the UI-evidence line only for a web UI), and the Builder grade.
+and the two commands (add the UI-evidence line only for a web UI).
 
 If `CLAUDE.md` already exists, append only missing sections — never touch existing content.
 

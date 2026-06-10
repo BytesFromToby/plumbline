@@ -39,7 +39,7 @@ Identify before starting:
   - `foreman` wants to **split** a blueprint (>10 slices) — that's a scope call; surface it.
 - **Spec is truth.** Carry the spec into every stage; if a stage's output contradicts it, stop.
 - **Inspector runs with fresh eyes — always as a separate subagent.** The pipeline built the code; it cannot also be the one to prove it. Spawn `inspector` in a fresh session so "no stake in the outcome" stays structural. The pipeline never grades its own work.
-- **Spend capability where it pays.** `builder` may run on an economy model — the blueprint's fine grain is what makes that safe (see `Builder grade:` in `CLAUDE.md`). `inspector` must spawn on a capable model: judging evidence and test fidelity is where capability pays, and it's the last line of defense — never the place to save money.
+- **Spend capability where it pays.** `builder` may run on an economy model — the blueprint's fine grain is what makes that safe, whatever model shows up for a given run. `inspector` must spawn on a capable model: judging evidence and test fidelity is where capability pays, and it's the last line of defense — never the place to save money.
 - **Build-til-green is `builder`'s per-slice test run**, not a self-graded check. `builder` runs the test command after each step and at each slice checkpoint; the suite must be green before the next slice.
 - **Follow the project's Change rules** (the Quick/Full Path in `CLAUDE.md`). Don't commit unless the user asked or the project's history mode calls for it; leave changes reviewable.
 

@@ -56,13 +56,14 @@ Improve project docs for clarity: `CLAUDE.md`, `CONTEXT.md` / `REFERENCES.md`. R
 Look for repeatable tasks worth a helper script (health checks, cross-reference validators). If you write one, create `tools/` lazily at that point (it is not pre-created). A new tool script is Full-Path — propose it in Recommendations first unless it is a trivial, self-contained check.
 
 ### Phase 6 — Recommendations
-1. **Read the deviation history first** — `output/deviations/` across all past builds. This is
-   the data that tunes the framework to the model running it:
-   - **Dense trivial deviations** (renames, file moves, tactic swaps) → the blueprints
-     over-specify *how* for this builder; recommend coarser step grain (`Builder grade: frontier`
-     in CLAUDE.md).
-   - **Repeated Stucks / ambiguity stops** → the grain is too coarse or addresses are missing;
-     recommend finer steps (`Builder grade: economy`) or call out what foreman keeps leaving thin.
+1. **Read the deviation history first** — `output/deviations/` across all past builds. The
+   builder model varies run to run, so don't tune grain to a model — read the trends as
+   *plan-quality* signals:
+   - **Dense trivial deviations** (renames, file moves, tactic swaps) → blueprints are
+     constraining tactics that don't affect outcomes; recommend foreman pin what matters
+     (names, interfaces, behavior) and leave tactics free.
+   - **Repeated Stucks / ambiguity stops** → steps keep leaving addresses or details thin;
+     call out what foreman keeps under-specifying.
    - A handful of meaningful deviations is healthy — only flag a *pattern*.
 2. Compile everything deferred into a prioritized list (format below).
 

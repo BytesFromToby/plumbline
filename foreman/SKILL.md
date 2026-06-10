@@ -47,7 +47,7 @@ Before writing anything, plan the slices mentally.
 - **Flag risky slices `[inspect]`.** Tag a slice's heading `[inspect]` when it touches a schema, auth/security, a destructive operation, or a cross-module seam. Flagged slices end in a hard inspector stop; unflagged slices end at the builder's green-test checkpoint and flow on. The final slice is always inspected.
 - The final slice always ends by verifying the spec's `**Done when:**` items
 
-**Step grain — match the builder.** Check `CLAUDE.md` for a `Builder grade:` line. `economy` (the default): plan fine-grained — exact addresses, one small move per step, nothing left to judgment; the blueprint is the hand-holding that makes a budget model a reliable builder. `frontier`: steps may state goals with constraints rather than moves — a capable builder sequences its own work within a step. When in doubt, plan fine: an over-specified step costs minutes, an under-specified one costs a wrong build.
+**Step grain — plan for the weakest builder that might run it.** The model executing the blueprint is unknown at planning time and can differ run to run, so the grain can't be tuned to it. Plan fine-grained, always: exact addresses, one small move per step, nothing left to judgment. The asymmetry makes this the only safe choice — a strong builder following fine steps loses minutes; a weak builder improvising through coarse steps loses the build.
 
 **If the blueprint exceeds 10 slices:** consider splitting it into two blueprint files, each covering a distinct phase of the feature. Flag this to the user before writing — splitting is a scope decision, not a formatting one.
 
