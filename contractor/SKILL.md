@@ -1,6 +1,7 @@
 ---
 name: contractor
 description: Runs the full build pipeline end-to-end — scaffold, spec, blueprint, build-til-green, independent sign-off, and how-to-run. Stops once for spec approval; everything else flows. The build-mode counterpart to walkthrough.
+version: 1.0
 ---
 
 ## When to use this skill
@@ -38,6 +39,7 @@ Identify before starting:
   - `foreman` wants to **split** a blueprint (>10 slices) — that's a scope call; surface it.
 - **Spec is truth.** Carry the spec into every stage; if a stage's output contradicts it, stop.
 - **Inspector runs with fresh eyes — always as a separate subagent.** The pipeline built the code; it cannot also be the one to prove it. Spawn `inspector` in a fresh session so "no stake in the outcome" stays structural. The pipeline never grades its own work.
+- **Spend capability where it pays.** `builder` may run on an economy model — the blueprint's fine grain is what makes that safe (see `Builder grade:` in `CLAUDE.md`). `inspector` must spawn on a capable model: judging evidence and test fidelity is where capability pays, and it's the last line of defense — never the place to save money.
 - **Build-til-green is `builder`'s per-slice test run**, not a self-graded check. `builder` runs the test command after each step and at each slice checkpoint; the suite must be green before the next slice.
 - **Follow the project's Change rules** (the Quick/Full Path in `CLAUDE.md`). Don't commit unless the user asked or the project's history mode calls for it; leave changes reviewable.
 
@@ -61,12 +63,13 @@ Skip entirely if `Planning/` and `CLAUDE.md` already exist.
 ### Phase 4 — Build til green
 - Run **builder** on Slice 1, then continue slice by slice through the final slice — *this is the automation the pipeline adds*: you don't re-dispatch builder per slice.
 - After each slice, builder has run the test command; confirm green before the next slice.
+- **On a slice flagged `[inspect]`** (schema, auth, destructive ops, cross-module seams — foreman tags these), spawn `inspector` for a mid-slice check before continuing; unflagged slices flow on green tests alone.
 - **On any builder Stuck, halt** (see forced halts). Do not skip the slice, swap the approach, or retry past three attempts.
 - On the final slice, builder rolls every deviation up into `output/deviations/Deviations_[feature]_[date].md`. Carry that path forward.
 
 ### Phase 5 — Independent sign-off
 - **Spawn `inspector` as a separate subagent** for final feature sign-off — feature: [feature], scope: final. It reads the spec's Done-when items, runs the committed tests (driving the software where no test exists), captures evidence, stamps the blueprint, and writes `output/inspect/Inspect_[feature]_Final_[date].md`.
-- If inspector reports **FAIL**, route back: report the failing items and run **builder** to fix, then re-spawn inspector. Do not edit criteria to make it pass.
+- If inspector reports **FAIL**, route back: run **builder in fix mode** with the inspection report — the failure items are its step list, governed by the same stuck/deviation rules — then re-spawn inspector. Do not edit criteria to make it pass.
 - `[human-required]` items come back as `needs-human` — collect them for the final report; never grade them.
 
 ### Phase 6 — How to run

@@ -1,6 +1,7 @@
 ---
 name: foreman
 description: Reads the spec and produces the blueprint — a step-by-step execution plan for the builder, with a committed test planned for every automated Done-when item. Run after architect, before builder.
+version: 1.0
 ---
 
 ## When to use this skill
@@ -41,7 +42,12 @@ Before writing anything, plan the slices mentally.
 - Maximum 10 steps per slice. No maximum number of slices.
 - Natural seams: structure → behaviour → polish / data layer → logic → UI / scaffold → core → edge cases
 - **Encode every `[automated]` Done-when item as a committed test.** In the slice that implements the behavior an automated item checks, include a step that *writes that test*. This is what lets inspector run a pinned, repeatable check instead of improvising one. `[human-required]` items get no test — inspector captures evidence and the human judges.
+- **Write forward constraints.** The builder does not read ahead — you carry the cross-slice knowledge. When a later slice depends on a choice made in an earlier step, write the constraint into the earlier step's **Build** text (e.g. "Slice 3 extends this loader — keep the interface generic, don't hardcode the city template"). A builder should never need to see slice 3 to make slice 1's choice safely.
+- **Every step names its addresses.** Each step's **Build** text names the file path(s) it touches and the exact identifiers (functions, classes, routes, columns) it creates or modifies — taken from the spec or the existing code, never invented. The builder makes no naming or placement choices.
+- **Flag risky slices `[inspect]`.** Tag a slice's heading `[inspect]` when it touches a schema, auth/security, a destructive operation, or a cross-module seam. Flagged slices end in a hard inspector stop; unflagged slices end at the builder's green-test checkpoint and flow on. The final slice is always inspected.
 - The final slice always ends by verifying the spec's `**Done when:**` items
+
+**Step grain — match the builder.** Check `CLAUDE.md` for a `Builder grade:` line. `economy` (the default): plan fine-grained — exact addresses, one small move per step, nothing left to judgment; the blueprint is the hand-holding that makes a budget model a reliable builder. `frontier`: steps may state goals with constraints rather than moves — a capable builder sequences its own work within a step. When in doubt, plan fine: an over-specified step costs minutes, an under-specified one costs a wrong build.
 
 **If the blueprint exceeds 10 slices:** consider splitting it into two blueprint files, each covering a distinct phase of the feature. Flag this to the user before writing — splitting is a scope decision, not a formatting one.
 
@@ -70,6 +76,8 @@ Date: YYYY-MM-DD
 ---
 
 ## Slice 1: [Name]
+<!-- Append [inspect] to the heading when the slice touches schema, auth/security,
+     destructive operations, or a cross-module seam. -->
 **Scope:** [One sentence — what the codebase can do when this slice is done.]
 
 ### Step 1: [Title]
@@ -89,17 +97,19 @@ Date: YYYY-MM-DD
 [Continue steps for this slice.]
 
 ---
-⛔ End of Slice 1. Run **inspector** on this slice before continuing.
+End of Slice 1. Builder checkpoint: tests green → continue to Slice 2.
+<!-- For a slice flagged [inspect], use the hard stop instead:
+⛔ End of Slice 1 [inspect]. Run **inspector** on this slice before continuing. -->
 
 ---
 
-## Slice 2: [Name]
+## Slice 2: [Name] [inspect]
 **Scope:** [One sentence.]
 
 [Continue steps.]
 
 ---
-⛔ End of Slice 2. Run **inspector** on this slice before continuing.
+⛔ End of Slice 2 [inspect]. Run **inspector** on this slice before continuing.
 
 ---
 
@@ -118,6 +128,23 @@ Date: YYYY-MM-DD
 ---
 ⛔ Final slice complete. Run **inspector** for final sign-off.
 ```
+
+---
+
+## Regenerating after a spec update — never delete the audit
+
+When the blueprint already exists and the spec has changed, do **not** rewrite the file from
+scratch. The blueprint carries history — checkboxes, inspector stamps, deviation notes — and
+regeneration must preserve it:
+
+1. Diff the new spec against what the blueprint was built from; identify which slices the
+   change actually touches.
+2. **Untouched slices keep everything**: checkboxes, `✅/❌ Inspector:` stamps, `**Deviation:**`
+   notes — copied forward verbatim.
+3. Each affected slice is marked `**STALE — spec changed YYYY-MM-DD**` under its heading, then
+   rewritten. A completed-but-now-stale slice keeps its old stamp *and* the STALE mark — the
+   record shows it passed against the old spec.
+4. New behavior gets new slices/steps as normal.
 
 ---
 

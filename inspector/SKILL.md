@@ -1,11 +1,13 @@
 ---
 name: inspector
-description: Proves a slice or feature is done by running it. Reads the spec's Done when items, runs the tests that encode them (driving the software where no test exists), captures evidence, stamps the blueprint, and produces a signed report. Runs with fresh eyes — ideally a separate subagent. Run after builder — per slice or final sign-off.
+description: Proves a slice or feature is done by running it. Reads the spec's Done when items, runs the tests that encode them (driving the software where no test exists), judges test fidelity, captures evidence, stamps the blueprint, and produces a signed report. Runs with fresh eyes — ideally a separate subagent. Run after builder — on [inspect]-flagged slices and for final sign-off.
+version: 1.0
 ---
 
 ## When to use this skill
-- After builder completes a slice, to verify it before continuing
-- After the final slice, for full feature sign-off
+- After builder completes a slice the blueprint flags `[inspect]` (schema, auth/security, destructive ops, cross-module seams) — or any slice on request
+- After the final slice, for full feature sign-off (always)
+- After builder's fix mode — re-inspection closes every repair
 
 Inspector is read-only on the codebase. It runs the software and reports. It does not fix code — failures are findings for the builder.
 
@@ -62,6 +64,7 @@ Ask the user if not stated:
 
 For each `[automated]` item (or mid-slice Done When condition):
 - **Prefer the committed test that encodes it.** If a test in the suite verifies this item, run it — that's the repeatable, pinned check, and its result is the evidence.
+- **Final only — judge the test's fidelity, not just its result.** A green test proves the criterion only if the test encodes it. Read the backing test and ask: *would this test fail if the criterion were violated?* Vacuous assertions, behavior mocked away, the wrong route or fixture exercised — any of these means the item is **not proven**, however green the run. Record `fidelity: ok` or `fidelity: weak — [reason]` per item. A weak test is a finding routed to builder (the criterion needs a real test), never a pass. This check matters most when an economy model wrote the tests for its own code.
 - **If no such test exists,** drive the software directly (run/demo command or the invocation the item implies) to verify it this once — *and flag the gap*: an `[automated]` item with no backing test is a foreman/builder miss to close, not a permanent state. Note it in the report.
 - Capture **observable evidence**: command run, stdout/stderr, exit code, file output, or screenshot for UI
 - Judge pass/fail strictly against the item text. If an `[automated]` item is too vague to judge mechanically, that is a **defect in the criterion** (it was never observable) — report it back as such. Do not silently downgrade it to `needs-human`.
@@ -83,7 +86,7 @@ For each `[human-required]` item:
 
 When the run/demo command launches a web UI, use **Playwright (Python)** as the capture engine — to drive the browser and take screenshots. It is the hands and camera, not a test suite.
 
-- Setup (once per project): `pip install playwright` then `playwright install chromium`
+- Check it's available first (`playwright --version` or an import probe). If it isn't, **surface the missing dependency and ask** rather than silently installing — inspector is otherwise install-nothing (`pip install playwright` + `playwright install chromium` once approved)
 - `[automated]` UI item → assert in Playwright (element visible, text present); evidence is the assertion result plus a screenshot
 - `[human-required]` UI item → navigate and screenshot only; leave the judgement for sign-off
 - Save output
@@ -120,9 +123,13 @@ Run/demo command: `...`
 Summary: [X] passed · [Y] failed · [Z] need human sign-off
 
 ## Results
-| Criterion | Status | Evidence |
-|-----------|--------|----------|
-| [item text] | PASS / FAIL / needs-human | command + key output (or path under output/inspect/) |
+| Criterion | Status | Fidelity | Evidence |
+|-----------|--------|----------|----------|
+| [item text] | PASS / FAIL / needs-human | ok / weak — [reason] / n/a | command + key output (or path under output/inspect/) |
+
+<!-- Fidelity is judged on final sign-off only: "would this test fail if the criterion were
+     violated?" A weak test means the item is unproven — route to builder. Drop the column
+     on mid-slice reports; human-required items are n/a. -->
 
 ## Deviations noted
 | Step | Deviation | Impact |

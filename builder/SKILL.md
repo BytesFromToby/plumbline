@@ -1,11 +1,13 @@
 ---
 name: builder
-description: Executes one slice of the blueprint — writes the code, checks off steps, logs deviations, and stops if the blueprint contradicts the spec. Run after foreman, one slice at a time.
+description: Executes one slice of the blueprint — writes the code, checks off steps, logs deviations, and stops if the blueprint contradicts the spec. Run after foreman, one slice at a time. Also runs in fix mode against an inspector failure report.
+version: 1.0
 ---
 
 ## When to use this skill
 - After foreman has written the blueprint
 - Once per slice — stop at the slice checkpoint, then wait for instruction
+- After a failed inspection — run in **fix mode** (see below) with the inspector report as input
 
 ---
 
@@ -49,6 +51,7 @@ The instinct: when something doesn't go as written, stop and report rather than 
 "Don't improvise" means **don't substitute a different approach, design, or interface than the step specifies.** It does *not* mean you can't solve ordinary implementation problems — fixing a syntax error, finding the right import, structuring a loop are just coding, not improvising.
 
 Stop and report if:
+- A step's **Build** text is ambiguous enough that two readings produce different interfaces or behavior — stop, don't pick one. Choosing between readings is a design decision; the blueprint should have named the addresses.
 - The **Done When** condition can't be met and the cause is unclear
 - You've made three *different* fix attempts on a failing test and it still fails — stop; do not keep cycling fixes (re-running the same fix doesn't count as a new attempt)
 - The step requires a decision that would change the spec — a different approach, interface, or behavior than written
@@ -89,6 +92,25 @@ The Done When is the arbiter: if it still passes the same way, you deviated; if 
 - One logical concern per function. If a function grows past ~50 lines, check whether it covers more than one concern. If it does, split it.
 - Tests are build output, not optional. When a step says to write a test, write it and keep it alongside the code it verifies — that committed test is how the spec's automated criteria stay pinned for inspector.
 - Follow language conventions from CLAUDE.md. If none are specified: PEP 8 for Python, standard ESLint rules for JS/TS.
+
+---
+
+## Fix mode — repairing a failed inspection
+
+When inspector reports FAIL, the repair runs under the same governance as the build — not as
+freestyle patching. Input: the inspector report (`output/inspect/Inspect_[feature]_*.md`).
+
+- **The report's failure items are your step list.** Work them in order. For each: the item
+  text is the Done When; the evidence in the report is your starting diagnosis.
+- All normal rules apply unchanged — spec check, stuck rules, deviation notes, the three-attempt
+  limit, the destructive-action stop. The spec is still truth; never adjust a criterion or a
+  test's meaning to make it pass (weakening a test the inspector flagged as low-fidelity into
+  something even weaker is the canonical violation).
+- Log fixes on the blueprint under the affected slice: `**Fix:** [item] — [what changed]
+  (YYYY-MM-DD)` — the audit trail of the repair lives where the work lives.
+- When all failure items are addressed and the suite is green, hand off: "Fixes complete —
+  re-run **inspector**." Fix mode always ends in re-inspection; the builder never declares the
+  repair verified.
 
 ---
 
