@@ -2,7 +2,7 @@
 
 *To build a house well you follow the plans, double-check the work, and keep everything plumb. The plumb line is the builder's reference of truth — here, your spec is that line.*
 
-![Plumbline workflow: scaffold → architect → foreman → builder → inspector, each stage producing its artifact and ending in a verified PASS.](demo_diagram.gif)
+![Plumbline workflow: scaffold → architect → foreman → builder → inspector — each stage producing its artifact, one approval gate at the spec, ending in a fidelity-checked PASS.](demo_diagram.gif)
 
 ## Description
 

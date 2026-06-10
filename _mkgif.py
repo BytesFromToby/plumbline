@@ -30,11 +30,11 @@ F_STAT  = font(r"C:\Windows\Fonts\segoeui.ttf", 17)
 
 # ---- the two rows we animate ----
 BUILD = [
-    ("scaffold",  "skeleton + CLAUDE.md"),
+    ("scaffold",  "git, skeleton, CLAUDE.md"),
     ("architect", "spec.md"),
     ("foreman",   "blueprint.md"),
     ("builder",   "code + tests"),
-    ("inspector", "PASS - signed report"),
+    ("inspector", "fidelity-checked PASS"),
 ]
 WALK = [
     ("walkthrough", "baseline"),
@@ -172,7 +172,8 @@ add(render(BUILD, None, set(), {}, set(), "a plain-language prompt in . . .", MU
 animate_chain(BUILD, caption="", baton_text="passing the baton . . .",
               activate_ms=140, settle_ms=680,
               final_status="trust, but verify  —  idea to verified, working code",
-              final_color=GREEN, hold_ms=1600)
+              final_color=GREEN, hold_ms=1600,
+              gate=1, gate_text="your approval", gate_hold_ms=950)
 save_gif("demo_diagram.gif")
 
 # ---- walkthrough.gif — maintain mode, unattended ----
