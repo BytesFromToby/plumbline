@@ -1,6 +1,7 @@
 ---
 name: surveyor
 description: Static check of code against the spec — finds drift, unbuilt features, undocumented code, and automated Done-when items with no backing test. Reads and compares; never runs the software. Run before a feature, after a refactor, or when spec and code feel out of step.
+version: 1.0
 ---
 
 ## When to use this skill

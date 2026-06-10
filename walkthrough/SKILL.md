@@ -1,6 +1,7 @@
 ---
 name: walkthrough
 description: Autonomous maintenance walkthrough — baseline, spec drift (via surveyor), coverage, docs, and a prioritized recommendations list. Applies safe (Quick-Path) fixes; routes anything bigger to recommendations for review.
+version: 1.0
 ---
 
 ## When to use this skill
@@ -22,7 +23,7 @@ Before starting, identify:
 ## Rules
 - **No check-ins.** Do not ask for permission. Anything you cannot safely do autonomously goes to Recommendations.
 - **Spec is truth.** If code disagrees with the spec, the spec wins.
-- **Autonomy is fenced by the Change rules in CLAUDE.md (Quick Path / Full Path).** Apply **Quick-Path** changes yourself (no new/removed files, no schema change, no core-logic change, nothing that needs a decision doc). Anything that is **Full-Path** — schema, core logic, new/renamed files, decisions worth recording — goes to **Recommendations**, not applied. Do not author decision docs unattended.
+- **Autonomy is fenced by the Change rules in CLAUDE.md (Quick Path / Full Path).** Apply **Quick-Path** changes yourself (no new/removed files, no schema change, no core-logic change, nothing that needs a decision doc). **One explicit file-creation exception: new *test* files are Quick-Path** — adding a test for existing behavior changes nothing a future reader needs explained. Anything that is **Full-Path** — schema, core logic, new/renamed non-test files, decisions worth recording — goes to **Recommendations**, not applied. Do not author decision docs unattended.
 - **Run the test command after every change.** If a change breaks tests and you can't fix it within the Quick-Path fence, revert it and log to Recommendations.
 - **Log everything** to `output/walkthrough/WalkthroughLog_YYYY-MM-DD.md` as you go.
 - **Commit nothing.** Leave all changes uncommitted for review.
@@ -55,7 +56,15 @@ Improve project docs for clarity: `CLAUDE.md`, `CONTEXT.md` / `REFERENCES.md`. R
 Look for repeatable tasks worth a helper script (health checks, cross-reference validators). If you write one, create `tools/` lazily at that point (it is not pre-created). A new tool script is Full-Path — propose it in Recommendations first unless it is a trivial, self-contained check.
 
 ### Phase 6 — Recommendations
-Compile everything deferred into a prioritized list (format below).
+1. **Read the deviation history first** — `output/deviations/` across all past builds. This is
+   the data that tunes the framework to the model running it:
+   - **Dense trivial deviations** (renames, file moves, tactic swaps) → the blueprints
+     over-specify *how* for this builder; recommend coarser step grain (`Builder grade: frontier`
+     in CLAUDE.md).
+   - **Repeated Stucks / ambiguity stops** → the grain is too coarse or addresses are missing;
+     recommend finer steps (`Builder grade: economy`) or call out what foreman keeps leaving thin.
+   - A handful of meaningful deviations is healthy — only flag a *pattern*.
+2. Compile everything deferred into a prioritized list (format below).
 
 ---
 
