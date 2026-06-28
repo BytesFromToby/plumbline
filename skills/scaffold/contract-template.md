@@ -3,18 +3,18 @@
 
 # [Project Name]
 
-One line: *what this is and why it exists.* ← scaffold should prompt for this.
+One line: *what this is and why it exists.* ← from the brief / project name; `architect` refines it if thin.
 
 Plumbline: v1.0
 
 ## Stack
-[language / framework]
+[pending — `architect` fills this when it writes the first spec; the stack is a consequence of *what* gets built]
 
 ## Commands
-- Test: `[test command]`
-- Run/demo: `[how to launch it so behaviour is visible]`
-- Shell/OS: `[e.g. PowerShell on Windows]` — write all Test and Run commands in this dialect
-<!-- UI-evidence tool: `playwright (python)` — add only if there's a browser frontend. -->
+- Test: `[pending — architect]`
+- Run/demo: `[pending — architect; must be real, inspector depends on it]`
+- Shell/OS: `[scaffold fills — e.g. PowerShell on Windows]` — write all Test and Run commands in this dialect
+<!-- UI-evidence tool: `architect` adds `playwright (python)` here only if the spec calls for a browser frontend. -->
 
 ## History: git
 History is the git log — scaffold ran `git init` at birth. Commit each change with a clear
@@ -27,7 +27,7 @@ message; there is no separate changelog. *Why* a non-obvious choice was made goe
 | `Planning/specs/` | **Source of truth for behavior** — one `[feature]_spec.md` per feature, inline **Done when:** |
 | `Planning/reference/` | Shared definitions specs cite (data models, constants) — fills as specs need it |
 | `Planning/blueprints/` | `foreman`'s per-feature build plans |
-| `docs/decisions/` | Why a non-obvious choice was made (`YYYY-MM-DD-title.md`, append-only) |
+| `docs/decisions/` | Why a non-obvious choice was made (`[feature]_YYYY-MM-DD.md`, append-only) |
 | `output/` | Skill output — `inspector` evidence, etc. |
 | `docs/architecture.md` | The as-built system map — written once modules need one |
 
@@ -35,7 +35,7 @@ message; there is no separate changelog. *Why* a non-obvious choice was made goe
 
 ## Specs
 `architect` writes them. The `**Done when:**` format (tagged `[automated]` / `[human-required]`)
-is authoritative in `architect/SKILL.md`.
+is authoritative in the `architect` skill.
 
 ## Change rules
 Every code/data/structure change picks a path. History lives in **git** — each path ends in a commit.

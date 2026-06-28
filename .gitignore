@@ -8,3 +8,14 @@ Desktop.ini
 .idea/
 *.swp
 *~
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Claude Code (local)
+.claude/settings.local.json
+
+# Local sample run (carries its own git repo)
+/examples/Testrun/

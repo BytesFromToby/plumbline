@@ -4,6 +4,12 @@ description: Static check of code against the spec — finds drift, unbuilt feat
 version: 1.0
 ---
 
+## Contract terms — read first
+
+Before anything else, read the Plumbline contract at **`${CLAUDE_PLUGIN_ROOT}/TERMS.md`** (the `TERMS.md` in the Plumbline root, beside the skills). It is the source of truth for every shared token, status line, and file-naming pattern this skill reads or writes — reproduce them **verbatim**. **If you cannot load TERMS.md, stop and report; do not guess the contract.**
+
+---
+
 ## When to use this skill
 - Before starting a new feature (is there a spec, and is it current?)
 - After a large refactor (does the code still match the spec?)
@@ -83,7 +89,7 @@ For each finding, decide the recommendation — exactly one of:
 
 ## Step 5 — Write the survey
 
-Write the report to `output/surveys/Survey_YYYY-MM-DD.md` (create `output/surveys/` if it doesn't exist). If the survey was scoped to a single feature, name it `Survey_[feature]_YYYY-MM-DD.md`. If a survey already exists for today, append `_HHMM` rather than overwriting it — each run is a dated record.
+Write the report to `output/surveys/Survey_YYYY-MM-DD_HH-MM.md` (create `output/surveys/` if it doesn't exist). If the survey was scoped to a single feature, name it `Survey_[feature]_YYYY-MM-DD_HH-MM.md`. The `HH-MM` makes each run a distinct, time-ordered record — runs never overwrite.
 
 **Always write the file, even when clean** — a dated "no drift" record is the point. Drop any finding section that has no entries (mirrors inspector dropping empty sections).
 
@@ -121,5 +127,5 @@ Verdict: clean | N findings (Drift N · Unimplemented N · Undocumented N · Unt
 ## Step 6 — Hand off
 
 Surveyor makes no changes to code or specs — it only reports. State the verdict inline and point at the file:
-- Findings → "Survey written to `output/surveys/Survey_[date].md` — [N] findings. Run **architect** to reconcile the spec, or fix the code under the Change rules."
-- Clean → "Survey written to `output/surveys/Survey_[date].md` — spec and code agree, no drift found."
+- Findings → "Survey written to `output/surveys/Survey_[date]_[HH-MM].md` — [N] findings. Run **architect** to reconcile the spec, or fix the code under the Change rules."
+- Clean → "Survey written to `output/surveys/Survey_[date]_[HH-MM].md` — spec and code agree, no drift found."

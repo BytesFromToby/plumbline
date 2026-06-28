@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "plumbline",
+  "version": "1.0.0",
+  "description": "A spec-driven workflow of single-responsibility AI-agent skills: scaffold to architect to foreman to builder to inspector, plus surveyor and the homeowner/walkthrough orchestrators. Trust-but-verify — agents build, evidence proves, and the spec stays the source of truth from end to end.",
+  "author": {
+    "name": "BytesFromToby"
+  },
+  "homepage": "https://github.com/BytesFromToby/plumbline",
+  "repository": "https://github.com/BytesFromToby/plumbline.git",
+  "license": "MIT",
+  "keywords": [
+    "spec-driven",
+    "workflow",
+    "agent-skills",
+    "verification",
+    "tdd",
+    "code-review"
+  ]
+}

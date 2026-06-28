@@ -2,17 +2,17 @@
 
 *To build a house well you follow the plans, double-check the work, and keep everything plumb. The plumb line is the builder's reference of truth — here, your spec is that line.*
 
-![Plumbline workflow: scaffold → architect → foreman → builder → inspector — each stage producing its artifact, one approval gate at the spec, ending in a fidelity-checked PASS.](demo_diagram.gif)
+![Plumbline workflow: scaffold → architect → foreman → builder → inspector — each stage producing its artifact, one approval gate at the spec, ending in a fidelity-checked PASS.](assets/demo_diagram.gif)
 
 ## Description
 
 A "trust, but verify" set of agent skills that build code in a trackable way — even reporting their own deviations as they go — for better, more accountable coding.
 
-- **Agents build, you approve.** The work runs across five single-responsibility stages — first interview to signed-off code — and stops for your sign-off at each handoff.
+- **Agents build, you approve.** Run by hand, the work moves across five single-responsibility stages — from spec to signed-off code — stopping for your sign-off at each handoff.
 - **No stage does the next one's job.** `inspector` can't edit the spec to pass a test; `builder` can't invent requirements. Those boundaries are what keep it honest.
 - **Coordinated by files, not calls.** Stages never call each other, so any one runs on its own — and the spec stays the single source of truth end to end.
 - **Inspectable, not trusted.** A deviation log records where the build left the plan; test evidence backs every "done."
-- **Two modes, each with an orchestrator.** `contractor` takes an idea to verified code in one pass (stopping once, at the spec); `walkthrough` keeps a built project aligned to its spec, unattended. Both drive the same single-responsibility skills rather than reimplementing them.
+- **Two unattended orchestrators.** `homeowner` takes a written brief to verified code on its own, halting only when it hits a gap it can't safely cross; `walkthrough` keeps a built project aligned to its spec. Both drive the same single-responsibility skills rather than reimplementing them — and those skills also run by hand, where you approve each handoff.
 
 *Built for a solo developer's real projects — and run end-to-end on real features, spec through signed-off code, not just designed on paper. [Polis](https://github.com/BytesFromToby/Polis), a political-simulation game with a live-LLM negotiation layer, was specced, built, and signed off under it.*
 
@@ -43,25 +43,28 @@ Each stage hands off through the filesystem. The user approves between stages �
 
 Every project starts in **git** — `scaffold` runs `git init` with the skeleton, and the log is the history from day one (decision docs carry the *why*; no manual changelog to silently fall behind). A project still grows through stages — **small** (one spec, flat structure) → **big** (split specs, reference tier, architecture doc); graduating across that boundary — splitting a monolith spec, extracting the reference tier — is currently a **manual** step. (Automating it in a dedicated skill is a planned addition, not part of this version.)
 
-**Or hand the whole job to the contractor.** `contractor` is the build-mode orchestrator — the counterpart to `walkthrough`. It runs the five stages in one session, stopping exactly once, at the spec, then building, testing, and proving on its own:
+**Or hand the whole job to `homeowner`.** `homeowner` is the build-mode orchestrator — the counterpart to `walkthrough`. Give it a written brief and it runs the five stages on its own, with no human approval gate, halting only when it hits something it can't safely cross:
 
 ```
-contractor  ── one session: idea to verified code, a single gate ──
+homeowner  ── one session: a written brief to verified code, unattended ──
    │
    ├─ calls ─▶ scaffold ..... greenfield skeleton + CLAUDE.md (once)
-   ├─ calls ─▶ architect .... interviews you, writes the spec   ◀── you approve here
+   ├─ calls ─▶ architect .... expands the brief into a spec; gaps → assumptions (proceed) or forks (halt)
+   │            └─▶ homeowner reviews that spec against the brief it holds   ◀── its own gate
    ├─ calls ─▶ foreman ...... breaks the spec into a blueprint
    ├─ calls ─▶ builder ...... every slice, building till the tests pass
    └─ calls ─▶ inspector .... fresh-eyes proof, as a separate subagent
 ```
 
-It keeps the one gate that earns its place and drops the rest — but it never papers over trouble: a `builder` that gets stuck, an unresolved Open Question, or a failed inspection halts the run and surfaces it. And it can't grade its own work — `inspector` always runs as a separate agent, so the proof stays independent. Like `walkthrough`, it reimplements nothing; it only sequences.
+It removes the human spec gate and stands its own spec self-review in its place — the principal checking the plan against the brief it holds, not a self-graded build. But it never papers over trouble: unresolved Open Questions, a `builder` that gets stuck, or a failed inspection **halt the run and surface it** for a human. And it can't grade its own work — `inspector` always runs as a separate agent, so the proof stays independent. Like `walkthrough`, it reimplements nothing; it only sequences.
+
+For a *supervised* build — a human approving the spec — run the stages by hand instead: `architect` interviews you, you review the spec, then `foreman` → `builder` → `inspector`.
 
 ### Maintain — keep a built project honest
 
-Once code exists, `walkthrough` takes over — the maintain-mode orchestrator, what `contractor` is to building turned toward upkeep: run it and walk away. It works a project end-to-end — baseline, drift, coverage, docs — applying only changes safe enough to make unattended and routing everything else to a list you approve. It doesn't reimplement the checks it needs; it calls the same skills the build mode uses.
+Once code exists, `walkthrough` takes over — the maintain-mode orchestrator, what `homeowner` is to building turned toward upkeep: run it and walk away. It works a project end-to-end — baseline, drift, coverage, docs — applying only changes safe enough to make unattended and routing everything else to a list you approve. It doesn't reimplement the checks it needs; it calls the same skills the build mode uses.
 
-![Walkthrough: one autonomous maintenance session — walkthrough calls surveyor then inspector, applies Quick-Path fixes in place, and routes everything larger to a dated Recommendations list.](walkthrough.gif)
+![Walkthrough: one autonomous maintenance session — walkthrough calls surveyor then inspector, applies Quick-Path fixes in place, and routes everything larger to a dated Recommendations list.](assets/walkthrough.gif)
 
 ```
 walkthrough  ── one autonomous session, fenced to safe changes ──
@@ -75,7 +78,7 @@ walkthrough  ── one autonomous session, fenced to safe changes ──
 
 | Skill | Owns | Produces |
 |-------|------|----------|
-| **walkthrough** | An autonomous maintenance session (no check-ins, commits nothing) | Quick-Path fixes applied + `output/walkthrough/Recommendations_YYYY-MM-DD.md` |
+| **walkthrough** | An autonomous maintenance session (no check-ins, commits nothing) | Quick-Path fixes applied + `output/walkthrough/Recommendations_YYYY-MM-DD_HH-MM.md` |
 | **surveyor** | Static spec-vs-code drift — reads and compares, never runs the software | A dated `output/surveys/Survey_YYYY-MM-DD.md` (written even when clean) |
 | **inspector** | Runtime proof against the spec — *the same skill the build lifecycle ends on* | An evidence report in `output/inspect/` |
 
@@ -112,7 +115,7 @@ evidence, not anyone's self-assessment.
 - **The spec is the spine.** `architect` writes it, `builder` checks its work against it, `inspector` verifies the running software against it. The blueprint in the middle is a disposable plan; the spec is truth at both ends *and* in the middle.
 - **Evidence over assertion.** "Done" means *shown* to work. `inspector` runs the software and captures output — a bare "PASS" is not evidence.
 - **Independence is structural, not promised.** `inspector` runs with fresh eyes — ideally as a separate agent that never saw the build — so "no stake in the outcome" is enforced by isolation, not by good intentions.
-- **Convention-coupled, not call-coupled.** The single-responsibility skills never call each other — they share documented file contracts (the `CLAUDE.md` declarations + folder layout) and are sequenced by data dependency, not a hard-wired chain. The two orchestrators (`contractor`, `walkthrough`) *do* invoke them, but only to sequence — they reimplement nothing, so every skill stays independently runnable.
+- **Convention-coupled, not call-coupled.** The single-responsibility skills never call each other — they share documented file contracts (the `CLAUDE.md` declarations + folder layout) and are sequenced by data dependency, not a hard-wired chain. The two orchestrators (`homeowner`, `walkthrough`) *do* invoke them, but only to sequence — they reimplement nothing, so every skill stays independently runnable.
 - **Proportional ceremony.** A one-line fix doesn't get a decision doc; a schema change does. `architect` sizes its interview to the work; the **Change rules** in each project's `CLAUDE.md` give trivia a Quick Path and reserve the Full Path for features and schema.
 - **Gates must earn their place.** Every stop, check, and document exists to catch a specific failure. The ones that don't get cut — this framework has been pruned as hard as it's been built.
 
@@ -144,8 +147,8 @@ that can't fail (vacuous assertion, behavior mocked away) is a finding, not a pa
 - **`builder` reads the spec, not just the blueprint.** If a step contradicts the spec, it stops rather than faithfully building the wrong thing — closing the "telephone game" between plan and intent.
 - **`builder` stops cleanly when stuck.** Clear rules: don't improvise a different approach, don't retry forever, never run a destructive action on the blueprint's say-so alone, and leave the codebase in a known state when you stop.
 - **Deviations are an audit trail, not a blocker.** When the build diverges from the plan in a behavior-preserving way, it's logged inline and rolled up to `output/deviations/` — visible at the end whether or not inspection runs.
-- **`inspector` may stamp a result but never edit criteria.** It can record `✅ PASS — <date>` on the blueprint; it cannot touch a step, a Done-when, or the spec to make something pass.
-- **Inspection is risk-weighted, not ritual.** `foreman` flags slices that touch schema, auth, destructive operations, or cross-module seams `[inspect]` — those get a hard mid-slice inspector stop; the rest flow on green tests. The final sign-off is always inspected.
+- **`inspector` may stamp a result but never edit criteria.** It can record `✅ Inspector: PASS — YYYY-MM-DD HH:MM` on the blueprint; it cannot touch a step, a Done-when, or the spec to make something pass.
+- **Inspection is risk-weighted, not ritual.** `foreman` flags slices that touch schema, auth/security, destructive operations, or cross-module seams `[inspect]`; the rest flow on green tests. A build also picks an **inspection level** — inspect every slice, only the flagged ones (the default), or defer all mid-build checks to the end — so a human driving by hand isn't forced to stop at each flagged slice, while an unattended `homeowner` run always inspects them early. Whatever the level, the final sign-off is always inspected, and no `[inspect]` slice ever ships uninspected.
 - **Repairs run on rails too.** A failed inspection routes back to `builder` in **fix mode**: the report's failure items become the step list, the same stuck/deviation rules apply, and the loop always closes with re-inspection — the most fragile moment in the pipeline is governed, not improvised.
 - **The blueprint never forgets.** Regenerating after a spec update preserves checkboxes, inspector stamps, and deviation notes on unaffected slices; changed slices are marked stale, not erased. Regeneration can't delete the audit.
 
@@ -159,13 +162,14 @@ that can't fail (vacuous assertion, behavior mocked away) is a finding, not a pa
 |------|-------|
 | `Planning/specs/[feature]_spec.md` | Specs — the source of truth |
 | `Planning/reference/` | Shared definitions specs cite (data models, constants) |
-| `Planning/blueprints/[feature]_BP.md` | Per-feature build plans |
+| `Planning/blueprints/[feature]_BP.md` | Per-feature build plans (split into `_p-1`, `_p-2`, … past 10 slices) |
 | `docs/decisions/` | Decision logs (append-only) |
 | `docs/architecture.md` | The as-built system map — written once modules need one |
 | `output/inspect/` | Inspector reports + evidence |
 | `output/deviations/` | Builder deviation rollups |
-| `output/surveys/` | Surveyor drift reports (`Survey_YYYY-MM-DD.md`) |
-| `output/walkthrough/` | Walkthrough log + recommendations (`…_YYYY-MM-DD.md`) |
+| `output/surveys/` | Surveyor drift reports (`Survey_YYYY-MM-DD_HH-MM.md`) |
+| `output/walkthrough/` | Walkthrough log + recommendations (`…_YYYY-MM-DD_HH-MM.md`) |
+| `output/homeowner/` | Homeowner run logs (`HomeownerLog_YYYY-MM-DD_HH-MM.md`) |
 
 `scaffold` lays the full folder skeleton up front as guide-rails and inits **git** — the log is
 the history from day one; `docs/decisions/` carries the why.
@@ -174,10 +178,10 @@ the history from day one; `docs/decisions/` carries the why.
 
 ## The CLAUDE.md contract
 
-`scaffold` writes a single `CLAUDE.md` contract into each project; every skill reads it. It carries:
+`scaffold` writes a single `CLAUDE.md` contract into each project — the structure plus the parts knowable up front; every skill reads it. It carries:
 
 - **Identity** — one line on what the project is and why.
-- **Stack + Commands** — the test command and the run/demo command (must be *real* — `inspector` depends on it), plus a UI-evidence tool for web stacks.
+- **Stack + Commands** — the test command and the run/demo command (must be *real* — `inspector` depends on it), plus a UI-evidence tool for web stacks. `scaffold` makes no design decisions, so it leaves these as `[pending — architect]` placeholders; **`architect` fills them when it writes the first spec**, since the stack is a consequence of *what* gets built, not something to settle before any design exists.
 - **History** — git, from scaffold onward; the log is the history, `docs/decisions/` the rationale.
 - **Where things live** — the folder map, so a reader or agent orients without spelunking.
 - **Change rules** — the Quick Path / Full Path for any change (new *test* files are the one Quick-Path file-creation exception). Doctrine every skill reads, not a skill you invoke.

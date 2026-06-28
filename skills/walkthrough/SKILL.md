@@ -1,7 +1,13 @@
 ---
 name: walkthrough
-description: Autonomous maintenance walkthrough — baseline, spec drift (via surveyor), coverage, docs, and a prioritized recommendations list. Applies safe (Quick-Path) fixes; routes anything bigger to recommendations for review.
+description: Autonomous maintenance walkthrough — baseline, spec drift (via surveyor), coverage, docs, and a prioritized recommendations list. Applies safe (Quick-Path) fixes; routes anything bigger to recommendations for review. The maintain-mode counterpart to homeowner (build mode).
 version: 1.0
+---
+
+## Contract terms — read first
+
+Before anything else, read the Plumbline contract at **`${CLAUDE_PLUGIN_ROOT}/TERMS.md`** (the `TERMS.md` in the Plumbline root, beside the skills). It is the source of truth for every shared token, status line, and file-naming pattern this skill reads or writes — reproduce them **verbatim**. **If you cannot load TERMS.md, stop and report; do not guess the contract.**
+
 ---
 
 ## When to use this skill
@@ -25,7 +31,7 @@ Before starting, identify:
 - **Spec is truth.** If code disagrees with the spec, the spec wins.
 - **Autonomy is fenced by the Change rules in CLAUDE.md (Quick Path / Full Path).** Apply **Quick-Path** changes yourself (no new/removed files, no schema change, no core-logic change, nothing that needs a decision doc). **One explicit file-creation exception: new *test* files are Quick-Path** — adding a test for existing behavior changes nothing a future reader needs explained. Anything that is **Full-Path** — schema, core logic, new/renamed non-test files, decisions worth recording — goes to **Recommendations**, not applied. Do not author decision docs unattended.
 - **Run the test command after every change.** If a change breaks tests and you can't fix it within the Quick-Path fence, revert it and log to Recommendations.
-- **Log everything** to `output/walkthrough/WalkthroughLog_YYYY-MM-DD.md` as you go.
+- **Log everything** to `output/walkthrough/WalkthroughLog_YYYY-MM-DD_HH-MM.md` as you go.
 - **Commit nothing.** Leave all changes uncommitted for review.
 
 ---
@@ -35,7 +41,7 @@ Before starting, identify:
 ### Phase 1 — Baseline
 1. Run any health scripts the project has (check `tools/` if it exists).
 2. Run the test command. Log pass/fail.
-3. If specs carry "Done when" items, run **inspector** to learn what is actually *proven*, not just what compiles. **Spawn it as a separate subagent** — inspector's value depends on fresh eyes, and running it inline in this session defeats that. Log the result it reports back.
+3. If specs carry "Done when" items, run **inspector** to learn what is actually *proven*, not just what compiles. **Spawn it as a separate subagent** — inspector's value depends on fresh eyes, and running it inline in this session defeats that. Log the result it reports back. If inspector returns **`BLOCKED`** (the run/demo command won't launch — nothing can be verified), log that as "no runtime baseline" and carry it to Recommendations as a HIGH item; do not treat a `BLOCKED` as a proof result, and don't try to fix the launch yourself if it's Full-Path.
 4. Record all of this as the baseline in WalkthroughLog.
 
 ### Phase 2 — Spec drift
@@ -51,6 +57,7 @@ Run the **surveyor** skill to detect drift — do not reimplement detection here
 ### Phase 4 — Documentation
 Improve project docs for clarity: `CLAUDE.md`, `CONTEXT.md` / `REFERENCES.md`. Remove redundancy and stale info; make file maps scannable.
 - **Do not edit skill files or other tooling.** If a skill or tool should change, write it to Recommendations — walkthrough does not rewrite its own machinery unattended.
+- **Never fill a `[pending — architect]` contract field.** If `CLAUDE.md`'s Stack or Commands are still placeholders, that's not a doc cleanup — it's drift (architect should have filled them at the first spec). Route it to **Recommendations** ("contract Stack/Commands never filled — run architect"); do not fabricate the stack or a run command yourself.
 
 ### Phase 5 — Tools
 Look for repeatable tasks worth a helper script (health checks, cross-reference validators). If you write one, create `tools/` lazily at that point (it is not pre-created). A new tool script is Full-Path — propose it in Recommendations first unless it is a trivial, self-contained check.
@@ -69,7 +76,7 @@ Look for repeatable tasks worth a helper script (health checks, cross-reference 
 
 ---
 
-## Log Format (output/walkthrough/WalkthroughLog_YYYY-MM-DD.md)
+## Log Format (output/walkthrough/WalkthroughLog_YYYY-MM-DD_HH-MM.md)
 
 ```
 ## Phase N — Title
@@ -83,7 +90,7 @@ Look for repeatable tasks worth a helper script (health checks, cross-reference 
 
 ---
 
-## Recommendations Format (output/walkthrough/Recommendations_YYYY-MM-DD.md)
+## Recommendations Format (output/walkthrough/Recommendations_YYYY-MM-DD_HH-MM.md)
 
 ```
 ## Priority: HIGH / MEDIUM / LOW

@@ -149,7 +149,7 @@ def animate_chain(stages, caption, baton_text, activate_ms, settle_ms,
                       f"{name}   →   {art}", ACCENT, caption=caption,
                       gate=(gate if gate == i else None), gate_text=gate_text)
         add(last, settle_ms)
-        # gate pause — the one stop in the contractor sweep
+        # gate pause — the spec-approval stop in a supervised (by-hand) build
         if gate == i and gate_hold_ms:
             last = render(stages, i, set(range(i)), {k: 1.0 for k in range(i)}, set(range(i + 1)),
                           "stop — you approve the spec", GATE, caption=caption,

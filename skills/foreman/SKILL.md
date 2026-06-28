@@ -4,6 +4,12 @@ description: Reads the spec and produces the blueprint — a step-by-step execut
 version: 1.0
 ---
 
+## Contract terms — read first
+
+Before anything else, read the Plumbline contract at **`${CLAUDE_PLUGIN_ROOT}/TERMS.md`** (the `TERMS.md` in the Plumbline root, beside the skills). It is the source of truth for every shared token, status line, and file-naming pattern this skill reads or writes — reproduce them **verbatim**. **If you cannot load TERMS.md, stop and report; do not guess the contract.**
+
+---
+
 ## When to use this skill
 - After the spec is written and approved by the user
 - To regenerate the blueprint after a spec update
@@ -11,10 +17,10 @@ version: 1.0
 ## What is a blueprint?
 The blueprint is the builder's step-by-step execution plan. It breaks the spec into slices and steps that can be followed without re-deriving the whole spec each time. The blueprint is written to `Planning/blueprints/[feature]_BP.md` in a specific format that the builder understands.
 
-- Steps: small changes to the codebase
-- Slices: groups of steps (less than 10) that end in an independently testable state
-- Done when: After each slice, this is the observable condition that proves the slice is complete.
-- Complete when: After the last slice, this is the observable condition that proves the whole feature is done.
+- **Step:** the smallest unit — one small change to the codebase. Each step carries a `Build`, a `Test`, a `Done When`, and a `Stuck If`.
+- **Slice:** a group of steps (max 10) that ends in an independently testable state. A slice opens with a one-sentence `Scope` (what the codebase can do once the slice is done) and closes at a **builder checkpoint** — tests green → continue — or, when flagged `[inspect]`, a hard inspector stop.
+- **Done When (per step):** the observable pass condition that proves that one step is complete.
+- **Final verification:** the last slice always ends with a step that confirms the spec's own `**Done when:**` items — that step is the whole feature's completion condition; the blueprint defines no separate "complete when" of its own.
 
 ## Attitude
 - You are a foreman, not a builder. Your job is to read the spec and produce a clear, actionable plan for the builder to follow. The spec is the source of truth for what the feature should do, and your job is to break it down into manageable pieces.
@@ -22,14 +28,17 @@ The blueprint is the builder's step-by-step execution plan. It breaks the spec i
 - Tone: direct, peer-level, no padding.
 ---
 
-## Step 1 — Read the spec
+## Step 1 — Read the spec and the contract
 
 Ask the user which spec to work from if it isn't obvious. Read `Planning/specs/[feature]_spec.md` in full.
+
+Then read **`CLAUDE.md`** — you need its stack and, above all, its **test command** and run/demo command. The `Test:` line you write into every step must be the project's *real* command, not an invented invocation; inspector later runs exactly what you plan here, so a made-up command poisons the whole chain. If `CLAUDE.md` is missing or names no test command, that's a stop-and-report condition — the blueprint can't pin real tests without it.
 
 **Stop and report if:**
 - No spec exists — tell the user to run **architect** first
 - The spec has Open Questions that are unresolved — those must be answered before a blueprint can be written
 - The spec has no `**Done when:**` items — the builder has nothing to target
+- No `CLAUDE.md`, or it declares no real test command — there's nothing concrete to encode `Test:` lines against (tell the user to run **scaffold**, or to add the command)
 
 ---
 
@@ -39,28 +48,33 @@ Before writing anything, plan the slices mentally.
 
 **Slice rules:**
 - Each slice ends in an independently testable state — the slice does something real and verifiable at the boundary
-- Maximum 10 steps per slice. No maximum number of slices.
+- Maximum 10 steps per slice. **Maximum 10 slices per blueprint file** — an 11th slice starts a new part file (see Step 3).
 - Natural seams: structure → behaviour → polish / data layer → logic → UI / scaffold → core → edge cases
 - **Encode every `[automated]` Done-when item as a committed test.** In the slice that implements the behavior an automated item checks, include a step that *writes that test*. This is what lets inspector run a pinned, repeatable check instead of improvising one. `[human-required]` items get no test — inspector captures evidence and the human judges.
 - **Write forward constraints.** The builder does not read ahead — you carry the cross-slice knowledge. When a later slice depends on a choice made in an earlier step, write the constraint into the earlier step's **Build** text (e.g. "Slice 3 extends this loader — keep the interface generic, don't hardcode the city template"). A builder should never need to see slice 3 to make slice 1's choice safely.
 - **Every step names its addresses.** Each step's **Build** text names the file path(s) it touches and the exact identifiers (functions, classes, routes, columns) it creates or modifies — taken from the spec or the existing code, never invented. The builder makes no naming or placement choices.
-- **Flag risky slices `[inspect]`.** Tag a slice's heading `[inspect]` when it touches a schema, auth/security, a destructive operation, or a cross-module seam. Flagged slices end in a hard inspector stop; unflagged slices end at the builder's green-test checkpoint and flow on. The final slice is always inspected.
-- The final slice always ends by verifying the spec's `**Done when:**` items
+- **Flag risky slices `[inspect]`.** Tag a slice's heading `[inspect]` when it touches a schema, auth/security, a destructive operation, or a cross-module seam. The flag marks *where inspection is due* — it doesn't itself force a stop. Whether a flagged slice halts for inspection is the **caller's inspection level** — `full` / `flagged` / `none` (see TERMS §5): an orchestrator running `flagged` always stops; a manual `none` run defers to final sign-off. Unflagged slices end at the builder's green-test checkpoint and flow on. The final slice is always inspected, at every level.
+- The final slice — the last slice of the last part file — always ends by verifying the spec's `**Done when:**` items
 
 **Step grain — plan for the weakest builder that might run it.** The model executing the blueprint is unknown at planning time and can differ run to run, so the grain can't be tuned to it. Plan fine-grained, always: exact addresses, one small move per step, nothing left to judgment. The asymmetry makes this the only safe choice — a strong builder following fine steps loses minutes; a weak builder improvising through coarse steps loses the build.
 
-**If the blueprint exceeds 10 slices:** consider splitting it into two blueprint files, each covering a distinct phase of the feature. Flag this to the user before writing — splitting is a scope decision, not a formatting one.
+**Splitting across part files (mechanical, not a scope call).** A blueprint file holds at most 10 slices. When a feature needs more, continue into a new part file — this is foreman's own bookkeeping, not a decision to flag. *Feature* size is architect's job (it sizes and flags restructure while writing the spec); by the time you're here the scope is settled, and a long build is just a long build.
+
+- Plan the natural slice seams first, then cut the run into part files of ≤10 slices each at the cleanest boundaries — don't split mid-dependency.
+- A feature that fits in one file stays `[feature]_BP.md`. Only when it spills do the parts carry suffixes: `[feature]_BP_p-1.md`, `[feature]_BP_p-2.md`, … (no bare `[feature]_BP.md` in that case).
+- **Forward constraints cross part files.** You write every part, so a constraint for a p-2 slice still goes into the p-1 step it depends on — the builder, working one part at a time, never reads ahead across the seam either.
+- Each part except the last ends on an ordinary builder checkpoint that names the next part file; the **last** part carries the final spec-verification slice.
 
 ---
 
 ## Step 3 — Write the blueprint
 
-Write to `Planning/blueprints/[feature]_BP.md`. Create `Planning/blueprints/` if it doesn't exist.
+Write to `Planning/blueprints/[feature]_BP.md` (or, when the build needs more than 10 slices, to `[feature]_BP_p-1.md`, `[feature]_BP_p-2.md`, … — see "Splitting across part files"). Create `Planning/blueprints/` if it doesn't exist. Slice numbering runs continuously across parts — p-2 opens at Slice 11, not Slice 1.
 
 Use this format exactly:
 
 ```
-# Blueprint: [Feature Name]
+# Blueprint: [Feature Name][ — Part N of M]
 Spec: Planning/specs/[feature]_spec.md
 Date: YYYY-MM-DD
 
@@ -98,8 +112,11 @@ Date: YYYY-MM-DD
 
 ---
 End of Slice 1. Builder checkpoint: tests green → continue to Slice 2.
-<!-- For a slice flagged [inspect], use the hard stop instead:
-⛔ End of Slice 1 [inspect]. Run **inspector** on this slice before continuing. -->
+<!-- For a slice flagged [inspect], mark inspection due instead:
+⛔ End of Slice 1 [inspect]. Inspection due — run **inspector** on this slice before building on it,
+unless the caller's inspection level defers it to final sign-off. -->
+<!-- When a slice is the LAST in a part file (but not the last part), the checkpoint hands off across the seam instead:
+End of Slice 10. Builder checkpoint: tests green → continue in `[feature]_BP_p-2.md` at Slice 11. -->
 
 ---
 
@@ -109,7 +126,7 @@ End of Slice 1. Builder checkpoint: tests green → continue to Slice 2.
 [Continue steps.]
 
 ---
-⛔ End of Slice 2 [inspect]. Run **inspector** on this slice before continuing.
+⛔ End of Slice 2 [inspect]. Inspection due — run **inspector** on this slice before building on it, unless the caller's inspection level defers it to final sign-off.
 
 ---
 
@@ -127,6 +144,8 @@ End of Slice 1. Builder checkpoint: tests green → continue to Slice 2.
 
 ---
 ⛔ Final slice complete. Run **inspector** for final sign-off.
+
+- [ ] **Fully inspected** — every `[inspect]` slice and the final sign-off passed. Inspector ticks this; never check it by hand. Its absence means inspection is still owed somewhere.
 ```
 
 ---
@@ -155,6 +174,7 @@ Re-read the blueprint against the spec. Verify:
 - Every `[automated]` Done-when item has a step that writes a committed test encoding it
 - Every `[human-required]` Done-when item is covered by the final verification step (inspector captures evidence)
 - No step invents behaviour not in the spec
+- **If split into parts:** slice numbering is continuous across files, each part holds ≤10 slices, every non-last part ends on a checkpoint naming the next part, and only the last part carries the final spec-verification slice
 
 If anything is missing, fix it before reporting done.
 
@@ -162,6 +182,15 @@ If anything is missing, fix it before reporting done.
 
 ## Step 5 — Hand off
 
-Tell the user:
-1. Review the blueprint at `Planning/blueprints/[feature]_BP.md`
-2. Run **builder** — give it the blueprint and slice to start on (Slice 1 unless told otherwise)
+Emit one report. A human reads the summary and acts on it; an orchestrator routes on the status line. Same report either way — foreman's work doesn't change with the reader, so there's no separate mode.
+
+**Summary — where things are and what's in the plan:**
+- **Blueprint:** `Planning/blueprints/[feature]_BP.md` — or, if split, every part: `[feature]_BP_p-1.md`, `[feature]_BP_p-2.md`, …
+- **Slices:** total count, and which are `[inspect]`-flagged (schema / auth / destructive / cross-module seam).
+- **Test coverage:** every `[automated]` Done-when item has a committed test planned (from Step 4) — or list the gaps.
+
+**Next step:** Run **builder** — give it the blueprint and the slice to start on (Slice 1 of part 1 unless told otherwise).
+
+**Status line** (last line of the report):
+- `BLUEPRINT_READY` — Step 4 passed; the plan is complete and the build can begin.
+- `BLUEPRINT_BLOCKED: <reason>` — a Step 1 stop condition held (no spec / unresolved Open Questions / no `**Done when:**` items / no real test command in `CLAUDE.md`). The blueprint was not written; state exactly what must be resolved first.
