@@ -38,6 +38,7 @@ Then read **`CLAUDE.md`** — you need its stack and, above all, its **test comm
 - No spec exists — tell the user to run **architect** first
 - The spec has Open Questions that are unresolved — those must be answered before a blueprint can be written
 - The spec has no `**Done when:**` items — the builder has nothing to target
+- The spec **has** `**Done when:**` items but any are **untagged** (missing both `[automated]` and `[human-required]`) — an untagged criterion plans no test and would slip through Step 4's coverage check unseen, shipping a test-free blueprint. The spec is malformed (architect tags every criterion — TERMS §1); tell the user to run **architect** to tag them. Never proceed by silently treating untagged items as needing no test.
 - No `CLAUDE.md`, or it declares no real test command — there's nothing concrete to encode `Test:` lines against (tell the user to run **scaffold**, or to add the command)
 
 ---
@@ -170,6 +171,7 @@ regeneration must preserve it:
 ## Step 4 — Sanity check before handing off
 
 Re-read the blueprint against the spec. Verify:
+- **Every Done-when item carries a tag** (`[automated]` / `[human-required]`). Step 1 gates this; re-confirm here, because an untagged item makes the `[automated]` coverage check below pass *vacuously* (zero matches reads as "all covered") and ships a test-free blueprint. Find one → stop, don't hand off.
 - Every feature in the spec has at least one step
 - Every `[automated]` Done-when item has a step that writes a committed test encoding it
 - Every `[human-required]` Done-when item is covered by the final verification step (inspector captures evidence)
@@ -193,4 +195,4 @@ Emit one report. A human reads the summary and acts on it; an orchestrator route
 
 **Status line** (last line of the report):
 - `BLUEPRINT_READY` — Step 4 passed; the plan is complete and the build can begin.
-- `BLUEPRINT_BLOCKED: <reason>` — a Step 1 stop condition held (no spec / unresolved Open Questions / no `**Done when:**` items / no real test command in `CLAUDE.md`). The blueprint was not written; state exactly what must be resolved first.
+- `BLUEPRINT_BLOCKED: <reason>` — a Step 1 stop condition held (no spec / unresolved Open Questions / no `**Done when:**` items / untagged Done-when items / no real test command in `CLAUDE.md`). The blueprint was not written; state exactly what must be resolved first.

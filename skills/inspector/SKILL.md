@@ -39,6 +39,7 @@ The caller states these — an orchestrator passes them; ask the user if running
 
 **Cannot inspect — report `BLOCKED`, not `FAIL`.** These are not criteria failures; there is nothing for builder to fix, so the caller must halt for a human, never route to fix mode:
 - The spec has no `**Done when:**` items — nothing to verify against
+- A `**Done when:**` item is **untagged** (missing both `[automated]` and `[human-required]`) — the spec is malformed: inspector can't tell whether to test the item or capture human evidence, so the criterion is unverifiable as written. Halt for **architect** to tag it (TERMS §1). This is a spec defect, not a builder fix — never guess a tag to proceed.
 - CLAUDE.md has no run/demo command, or the command won't launch — cannot drive the software
 - The blueprint has no slice matching what was specified
 
@@ -65,7 +66,7 @@ The caller states these — an orchestrator passes them; ask the user if running
 
 **Mid-slice:** list the slice Scope + each step's Done When from the blueprint.
 
-**Final:** parse every `**Done when:**` item from the spec. Record: item text, tag, feature it belongs to. State totals: **[N] automated, [M] human-required.**
+**Final:** parse every `**Done when:**` item from the spec. Record: item text, tag, feature it belongs to. State totals: **[N] automated, [M] human-required.** If any item carries **neither** tag, stop and report the untagged-criterion `BLOCKED` condition (Inputs) — never guess a tag; an unproven criterion slipping through as "covered" is exactly what this catches.
 
 ---
 
@@ -170,6 +171,6 @@ Report for a human, and end with a **status line** the caller routes on — a hu
 
 **Failures found:** "Inspection failed — [N] items off spec. See report. Run **builder** to fix, then re-run inspector." → `FAIL: [N]`
 
-**Couldn't inspect:** "Cannot verify — [run command won't launch / no Done-when items / no run command]." → `BLOCKED: [reason]`
+**Couldn't inspect:** "Cannot verify — [run command won't launch / no Done-when items / untagged Done-when item / no run command]." → `BLOCKED: [reason]`
 
 **The two non-pass lines route differently and must never be confused:** `FAIL` has findings to fix → builder fix mode. `BLOCKED` has nothing to fix → the caller halts for a human. Never route a `BLOCKED` into fix mode — there is no code defect to repair, only a missing precondition.
