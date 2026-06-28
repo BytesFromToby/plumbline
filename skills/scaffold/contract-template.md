@@ -14,7 +14,7 @@ Plumbline: v1.0
 - Test: `[pending — architect]`
 - Run/demo: `[pending — architect; must be real, inspector depends on it]`
 - Shell/OS: `[scaffold fills — e.g. PowerShell on Windows]` — write all Test and Run commands in this dialect
-<!-- UI-evidence tool: `architect` adds `playwright (python)` here only if the spec calls for a browser frontend. -->
+<!-- UI evidence tool: `architect` adds the line `- UI evidence tool: playwright (python)` here only if the spec calls for a browser frontend. -->
 
 ## History: git
 History is the git log — scaffold ran `git init` at birth. Commit each change with a clear

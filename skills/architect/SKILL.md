@@ -162,7 +162,7 @@ Replace **only** the placeholders (never touch the rest of scaffold's structure)
 - **Stack** — the language/framework the spec implies.
 - **Test command** — how this project's tests run.
 - **Run/demo command** — how to launch it so behaviour is visible. **Must be real** — inspector depends on it.
-- **UI-evidence tool** — add the `playwright (python)` line only if the spec calls for a browser UI.
+- **UI evidence tool** — only if the spec calls for a browser UI, add the Commands line `- UI evidence tool: playwright (python)`. inspector greps the literal `UI evidence tool` key — keep it exact.
 
 Where the stack or how-to-run isn't settled:
 - **Interview mode** — ask, one question at a time, same as any other gap.

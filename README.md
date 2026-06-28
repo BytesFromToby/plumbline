@@ -181,7 +181,7 @@ the history from day one; `docs/decisions/` carries the why.
 `scaffold` writes a single `CLAUDE.md` contract into each project — the structure plus the parts knowable up front; every skill reads it. It carries:
 
 - **Identity** — one line on what the project is and why.
-- **Stack + Commands** — the test command and the run/demo command (must be *real* — `inspector` depends on it), plus a UI-evidence tool for web stacks. `scaffold` makes no design decisions, so it leaves these as `[pending — architect]` placeholders; **`architect` fills them when it writes the first spec**, since the stack is a consequence of *what* gets built, not something to settle before any design exists.
+- **Stack + Commands** — the test command and the run/demo command (must be *real* — `inspector` depends on it), plus a `UI evidence tool` line for web stacks. `scaffold` makes no design decisions, so it leaves these as `[pending — architect]` placeholders; **`architect` fills them when it writes the first spec**, since the stack is a consequence of *what* gets built, not something to settle before any design exists.
 - **History** — git, from scaffold onward; the log is the history, `docs/decisions/` the rationale.
 - **Where things live** — the folder map, so a reader or agent orients without spelunking.
 - **Change rules** — the Quick Path / Full Path for any change (new *test* files are the one Quick-Path file-creation exception). Doctrine every skill reads, not a skill you invoke.

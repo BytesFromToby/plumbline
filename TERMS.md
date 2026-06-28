@@ -187,6 +187,7 @@ Every skill must agree byte-for-byte. `[feature]` is the feature's lowercase slu
 |---|---|
 | `CLAUDE.md` | The per-project contract scaffold writes and every skill reads: identity, stack, commands, change rules, folder map, Plumbline version stamp. |
 | `[pending — architect]` | Placeholder scaffold leaves in `CLAUDE.md` for **Stack** and **Commands**. **architect** fills them when it writes the first spec — the one time architect writes to the contract. walkthrough must route an unfilled placeholder to Recommendations, **never fill it**. |
+| `UI evidence tool` | A `CLAUDE.md` **Commands** line — `- UI evidence tool: <tool>` (e.g. `playwright (python)`) — that **architect** adds when the spec calls for a browser UI and **inspector** reads to choose its capture engine. Match the key exactly: inspector greps the literal `UI evidence tool` (no hyphen). |
 | **Quick Path / Full Path** | The change-rules in `CLAUDE.md`. Quick Path: no files added/removed/renamed (new *test* files excepted), no schema/core-logic change → edit, test, commit. Full Path: everything else → spec, code, test, inspect, decision doc, commit. |
 | **Build mode / Maintain mode** | Build = idea → verified code (scaffold → architect → foreman → builder → inspector). Maintain = keep built code honest (surveyor, inspector, walkthrough). |
 | **Orchestrator** | A skill that sequences others without reimplementing them: **homeowner** (build), **walkthrough** (maintain). |

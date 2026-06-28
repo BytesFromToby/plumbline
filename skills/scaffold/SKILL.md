@@ -74,7 +74,7 @@ re-invent it inline). Fill **only the fields that need no design decision:**
 - **Shell/OS** — the environment you're running in (e.g. PowerShell on Windows).
 
 **Leave Stack and Commands as their `[pending — architect]` placeholders, and do not add the
-UI-evidence line.** Scaffold makes no stack or command decisions: those are consequences of *what*
+UI evidence line.** Scaffold makes no stack or command decisions: those are consequences of *what*
 gets built, which architect settles when it writes the first spec. Don't guess them — a placeholder
 that architect fills is correct; a guessed command that inspector later can't run is not.
 
