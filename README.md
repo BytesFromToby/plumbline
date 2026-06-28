@@ -2,8 +2,6 @@
 
 *To build a house well you follow the plans, double-check the work, and keep everything plumb. The plumb line is the builder's reference of truth — here, your spec is that line.*
 
-![Plumbline workflow: scaffold → architect → foreman → builder → inspector — each stage producing its artifact, one approval gate at the spec, ending in a fidelity-checked PASS.](assets/demo_diagram.gif)
-
 ## Description
 
 A "trust, but verify" set of agent skills that build code in a trackable way — even reporting their own deviations as they go — for better, more accountable coding.
@@ -33,7 +31,7 @@ scaffold ──▶ architect ──▶ foreman ──▶ builder ──▶ inspe
 
 | Stage | Owns | Produces |
 |-------|------|----------|
-| **scaffold** | Bootstrapping a greenfield project (run once) | Git init + the folder skeleton + a `CLAUDE.md` contract |
+| **scaffold** | Bootstrapping a greenfield project (run once) | The folder skeleton + a `CLAUDE.md` contract (+ `git init` in git mode) |
 | **architect** | Defining *what* to build | `Planning/specs/[feature]_spec.md` with inline acceptance criteria, a decision log |
 | **foreman** | Planning *how* to build it | `Planning/blueprints/[feature]_BP.md` — slices of ordered steps |
 | **builder** | Writing the code | Code + tests, executed one slice at a time, with a deviation log |
@@ -63,8 +61,6 @@ For a *supervised* build — a human approving the spec — run the stages by ha
 ### Maintain — keep a built project honest
 
 Once code exists, `walkthrough` takes over — the maintain-mode orchestrator, what `homeowner` is to building turned toward upkeep: run it and walk away. It works a project end-to-end — baseline, drift, coverage, docs — applying only changes safe enough to make unattended and routing everything else to a list you approve. It doesn't reimplement the checks it needs; it calls the same skills the build mode uses.
-
-![Walkthrough: one autonomous maintenance session — walkthrough calls surveyor then inspector, applies Quick-Path fixes in place, and routes everything larger to a dated Recommendations list.](assets/walkthrough.gif)
 
 ```
 walkthrough  ── one autonomous session, fenced to safe changes ──
@@ -193,9 +189,39 @@ The spec *format* isn't copied into the contract — it's authoritative in `arch
 
 ---
 
+## The shared contract: TERMS.md
+
+`CLAUDE.md` is the per-*project* contract. `TERMS.md` is the per-*framework* one: the single, canonical definition of every token, status line, file path, and invariant the skills share — `**Done when:**`, the `[automated]` / `[human-required]` tags, the routing status lines, the `[inspect]` trigger list, and the rest.
+
+It exists because a skill is read **cold**. A fresh agent — or a different model — loads one skill with none of the context it was written in, so any shared convention that lives only "in the author's head" is a silent failure waiting to happen: a stamp spelled two ways, a status line an orchestrator no longer recognizes. TERMS makes that shared ground explicit. Every skill reads it first (`${CLAUDE_PLUGIN_ROOT}/TERMS.md`) and stops if it can't load it, rather than guessing.
+
+And the contract is **verified, not decorative.** `tools/audit.py` checks every skill and agent against it — frontmatter validity, the load-line, reference resolvability, skill-name resolution — deterministically, on every push via CI. `tools/auditor.md` is the semantic half: a runbook for the producer/consumer agreement a script can't judge. It's the framework's own "trust, but verify" turned on itself.
+
+---
+
 ## Not a skill: the order of operations
 
 The sequence for any *single* change isn't a stage you invoke — it lives as the **Change rules** in each project's `CLAUDE.md` (Quick Path for trivia, Full Path for features and schema). Every skill reads the same doctrine, so the workflow stays consistent without one skill ever having to call another.
+
+---
+
+## Repository layout
+
+Plumbline is packaged as a Claude Code plugin — `.claude-plugin/plugin.json` declares it, and the default scans discover the skills and agents.
+
+```
+plumbline/
+├── .claude-plugin/plugin.json   # plugin manifest
+├── skills/        # the 8 skills (architect · foreman · builder · inspector ·
+│                  #   scaffold · surveyor · walkthrough · homeowner)
+├── agents/        # thin worker subagents that delegate to the skills
+├── TERMS.md       # the cross-skill contract — every skill reads it first
+├── tools/
+│   ├── audit.py   # deterministic contract audit (run in CI)
+│   └── auditor.md # the semantic-pass runbook
+├── .github/workflows/audit.yml   # runs the audit on every push
+└── README.md · LICENSE
+```
 
 ---
 
