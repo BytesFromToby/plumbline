@@ -31,9 +31,11 @@ writes the contract. The split: **`Planning/` = the living plan · `docs/` = the
 - `output/` — skill output. Its subfolders are laid up front as guide-rails, each filled by the skill that owns it:
   `output/inspect/` (inspector), `output/deviations/` (builder), `output/surveys/` (surveyor), `output/walkthrough/` (walkthrough), `output/homeowner/` (homeowner run logs).
 
-**Git:** every project starts in git — `git init` plus a sensible `.gitignore` and a first
-commit of the skeleton. The git log *is* the history; there is no separate changelog to maintain
-(an agent will eventually forget a manual changelog silently, which is worse than no history).
+**History mode — git by default.** In **git** mode (the default) every project starts in git:
+`git init` plus a sensible `.gitignore` and a first commit of the skeleton; the git log *is* the
+history, no separate changelog. In **none** mode (only when the caller asks for a no-git project)
+scaffold skips every git step and history is the dated artifact trail instead (see the contract's
+`## History`). Default to **git** unless told otherwise.
 
 Do **not** create: `specs/archive/` (git or in-place edits handle spec history), a `tools/`
 folder (walkthrough makes it lazily), `docs/architecture.md` (written only once modules need a
@@ -54,15 +56,18 @@ If everything already exists, report that and stop.
 
 ---
 
-## Step 2 — Create folders and init git
+## Step 2 — Create folders (and init git in git mode)
 
 Create any missing folders from the **What it creates** list above.
 
-Then, if the project isn't already a git repository: `git init`, write a **generic** `.gitignore`
-(OS/editor cruft and common ignores — the stack isn't decided yet, so don't tailor it; architect or
-a later change appends stack-specific lines), and make the first commit once `CLAUDE.md` is written
-(Step 3). Git is the project's history from day one — decisions still go to `docs/decisions/`, but
-"what changed when" lives in the log.
+**git mode (default):** if the project isn't already a git repository, `git init`, write a
+**generic** `.gitignore` (OS/editor cruft and common ignores — the stack isn't decided yet, so
+don't tailor it; architect or a later change appends stack-specific lines), and make the first
+commit once `CLAUDE.md` is written (Step 3). Git is the project's history from day one — decisions
+still go to `docs/decisions/`, but "what changed when" lives in the log.
+
+**none mode:** skip git entirely — no `git init`, no `.gitignore`, no commit. The folder skeleton
+and the dated artifacts are the project; history is the trail under `docs/decisions/` and `output/`.
 
 ---
 
@@ -80,8 +85,12 @@ that architect fills is correct; a guessed command that inspector later can't ru
 
 If `CLAUDE.md` already exists, append only missing sections — never touch existing content.
 
-Finish with the first commit: the skeleton plus `CLAUDE.md`, message like `Scaffold: project
-skeleton + contract (Plumbline v1.0)`.
+Set the contract's `## History` **Mode:** line to the chosen mode — `git` by default, `none` if the
+caller asked for a no-git project.
+
+**git mode only —** finish with the first commit: the skeleton plus `CLAUDE.md`, message like
+`Scaffold: project skeleton + contract (Plumbline v1.0)`. In `none` mode there is nothing to
+commit; the files on disk are the record.
 
 ---
 

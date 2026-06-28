@@ -337,7 +337,7 @@ End every run — signed off or halted — with a **short summary and the links*
 - **Run log:** `output/homeowner/HomeownerLog_[date]_[HH-MM].md` — the full phase-by-phase trail.
 
 **On `SIGNED OFF`, give the deliverable at a glance:**
-- **Files created / changed by the build** — derive from **git**: `git diff --stat` (and `--name-status`) since the scaffold commit. That's authoritative across every builder invocation and fix cycle; don't reconstruct it from builder prose.
+- **Files created / changed by the build** — in **git** mode, derive from `git diff --stat --name-status` since the scaffold commit (authoritative across every builder invocation and fix cycle; don't reconstruct it from prose). In **none** mode (no git), aggregate the **Files written/modified** that builder reported at each slice — that is the build's own record.
 - **Tests:** [N] tests, [N] passed (from the final inspection).
 - **Inspection issues:** `none` for a clean PASS — otherwise note what wasn't clean: weak-fidelity tests that were fixed, slices that needed fix cycles, or anything still owed.
 - **Human sign-off owed:** the [Z] `[human-required]` items, listed — these are the human's to verify (`none` if zero).

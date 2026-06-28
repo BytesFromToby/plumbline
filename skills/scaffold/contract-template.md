@@ -16,10 +16,13 @@ Plumbline: v1.0
 - Shell/OS: `[scaffold fills — e.g. PowerShell on Windows]` — write all Test and Run commands in this dialect
 <!-- UI evidence tool: `architect` adds the line `- UI evidence tool: playwright (python)` here only if the spec calls for a browser frontend. -->
 
-## History: git
-History is the git log — scaffold ran `git init` at birth. Commit each change with a clear
-message; there is no separate changelog. *Why* a non-obvious choice was made goes to
-`docs/decisions/`; *what changed when* is the log's job.
+## History
+Mode: **git**   <!-- git (default) | none -->
+
+- **git** (default): history is the git log — `scaffold` ran `git init` at birth, every change ends in a commit, and there is no separate changelog.
+- **none**: no git. History is the dated artifact trail — `docs/decisions/` (the *why*) plus the dated `output/` reports and the blueprint's checkboxes/stamps (the *what & when*). No manual changelog (an agent forgets it). The trade: a full audit trail, but no per-file diffs.
+
+*Why* a non-obvious choice was made always goes to `docs/decisions/`, in either mode.
 
 ## Where things live
 | Path | Holds |
@@ -38,18 +41,18 @@ message; there is no separate changelog. *Why* a non-obvious choice was made goe
 is authoritative in the `architect` skill.
 
 ## Change rules
-Every code/data/structure change picks a path. History lives in **git** — each path ends in a commit.
+Every code/data/structure change picks a path. Each path ends by **recording** the change — a commit in `git` mode; in `none` mode the saved files are the record (plus a decision doc when the change is non-obvious).
 
 **Quick Path** — no files added/removed/renamed (new *test* files excepted — those are
 Quick Path), no schema/core-logic change, nothing a future reader needs explained:
-1. Write/edit the code  2. Run the test command  3. Commit
+1. Write/edit the code  2. Run the test command  3. Commit (`git` mode)
 
 **Full Path** — everything else:
 1. Update the spec (if the change reshapes it, run `architect`)  2. Write/edit the code
 3. Run the test command  4. Run `inspector` if tracked by a blueprint
 5. Update this file's "Where things live" if files moved
 6. Write a decision doc to `docs/decisions/` if a non-obvious choice was made
-7. Commit
+7. Commit (`git` mode)
 
 ## How to work here
 - Write in plain, clear language.

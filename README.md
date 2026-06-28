@@ -41,7 +41,7 @@ scaffold ──▶ architect ──▶ foreman ──▶ builder ──▶ inspe
 
 Each stage hands off through the filesystem. The user approves between stages — the agent does the work, the human stays the judge.
 
-Every project starts in **git** — `scaffold` runs `git init` with the skeleton, and the log is the history from day one (decision docs carry the *why*; no manual changelog to silently fall behind). A project still grows through stages — **small** (one spec, flat structure) → **big** (split specs, reference tier, architecture doc); graduating across that boundary — splitting a monolith spec, extracting the reference tier — is currently a **manual** step. (Automating it in a dedicated skill is a planned addition, not part of this version.)
+By default every project starts in **git** — `scaffold` runs `git init` with the skeleton, and the log is the history from day one (decision docs carry the *why*; no manual changelog to silently fall behind). A **`none`** history mode is available for non-git workflows: scaffold skips git, and the dated artifact trail (`docs/decisions/` + `output/`) is the history — a full audit record, minus per-file diffs. A project still grows through stages — **small** (one spec, flat structure) → **big** (split specs, reference tier, architecture doc); graduating across that boundary — splitting a monolith spec, extracting the reference tier — is currently a **manual** step. (Automating it in a dedicated skill is a planned addition, not part of this version.)
 
 **Or hand the whole job to `homeowner`.** `homeowner` is the build-mode orchestrator — the counterpart to `walkthrough`. Give it a written brief and it runs the five stages on its own, with no human approval gate, halting only when it hits something it can't safely cross:
 
@@ -171,8 +171,9 @@ that can't fail (vacuous assertion, behavior mocked away) is a finding, not a pa
 | `output/walkthrough/` | Walkthrough log + recommendations (`…_YYYY-MM-DD_HH-MM.md`) |
 | `output/homeowner/` | Homeowner run logs (`HomeownerLog_YYYY-MM-DD_HH-MM.md`) |
 
-`scaffold` lays the full folder skeleton up front as guide-rails and inits **git** — the log is
-the history from day one; `docs/decisions/` carries the why.
+`scaffold` lays the full folder skeleton up front as guide-rails and, in **git** mode (the default),
+inits git — the log is the history from day one; `docs/decisions/` carries the why. In **`none`** mode
+it skips git and the dated artifacts are the history.
 
 ---
 
@@ -182,7 +183,7 @@ the history from day one; `docs/decisions/` carries the why.
 
 - **Identity** — one line on what the project is and why.
 - **Stack + Commands** — the test command and the run/demo command (must be *real* — `inspector` depends on it), plus a `UI evidence tool` line for web stacks. `scaffold` makes no design decisions, so it leaves these as `[pending — architect]` placeholders; **`architect` fills them when it writes the first spec**, since the stack is a consequence of *what* gets built, not something to settle before any design exists.
-- **History** — git, from scaffold onward; the log is the history, `docs/decisions/` the rationale.
+- **History** — git by default, from scaffold onward (the log is the history); a `none` mode for non-git projects uses the dated artifact trail instead. `docs/decisions/` carries the rationale either way.
 - **Where things live** — the folder map, so a reader or agent orients without spelunking.
 - **Change rules** — the Quick Path / Full Path for any change (new *test* files are the one Quick-Path file-creation exception). Doctrine every skill reads, not a skill you invoke.
 - **Version stamp** — the Plumbline version the project was scaffolded under, so skill drift is detectable later.
