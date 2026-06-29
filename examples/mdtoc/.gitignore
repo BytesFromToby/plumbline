@@ -1,0 +1,35 @@
+# OS cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs and temp
+*.log
+*.tmp
+tmp/
+temp/
+
+# Environment / secrets
+.env
+.env.*
+*.local
+
+# Dependency / build dirs (common; stack-specific lines appended later)
+node_modules/
+dist/
+build/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.coverage
+htmlcov/

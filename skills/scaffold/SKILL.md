@@ -60,6 +60,8 @@ If everything already exists, report that and stop.
 
 Create any missing folders from the **What it creates** list above.
 
+**Empty folders and git.** Git does not track empty directories, so in **git** mode drop a `.gitkeep` file in each folder that is still empty — that keeps the guide-rail skeleton in the first commit and on a fresh clone; the skill that owns a folder (e.g. `output/inspect/` → inspector) replaces it with real output later. In **none** mode the folders simply exist on disk, so no `.gitkeep` is needed.
+
 **git mode (default):** if the project isn't already a git repository, `git init`, write a
 **generic** `.gitignore` (OS/editor cruft and common ignores — the stack isn't decided yet, so
 don't tailor it; architect or a later change appends stack-specific lines), and make the first
