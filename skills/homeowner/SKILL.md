@@ -324,6 +324,14 @@ already carries a PASS stamp; the inspector's deferred-sweep finds nothing owed.
 itself; finishing with evidence captured and the items listed is the correct terminal state, not a
 failure. The human signs them off on their own time.
 
+**Commit the signed-off build (git mode).** On `SIGNED OFF` in **git** mode, honor the contract's
+*every change ends in a commit*: nothing has been committed since scaffold, so stage the whole verified
+build and commit it once — `git add -A`, then a message like `Build [feature]: signed off (Plumbline)`.
+This is the autonomous stand-in for the human who would otherwise commit per the Change rules, and it
+commits *verified* work (the build just passed independent sign-off). **Only on success** — a halted
+run commits nothing, leaving the working tree intact for resume. In **none** mode, skip: the files on
+disk are the record.
+
 Then append the Phase 6 block to the run log and write the closing report.
 
 ---
@@ -337,7 +345,7 @@ End every run — signed off or halted — with a **short summary and the links*
 - **Run log:** `output/homeowner/HomeownerLog_[date]_[HH-MM].md` — the full phase-by-phase trail.
 
 **On `SIGNED OFF`, give the deliverable at a glance:**
-- **Files created / changed by the build** — in **git** mode, derive from `git diff --stat --name-status` since the scaffold commit (authoritative across every builder invocation and fix cycle; don't reconstruct it from prose). In **none** mode (no git), aggregate the **Files written/modified** that builder reported at each slice — that is the build's own record.
+- **Files created / changed by the build** — in **git** mode, from the sign-off commit: `git diff --stat --name-status <scaffold-commit>..HEAD` (run *after* the commit above — `git diff` against the working tree alone misses the still-untracked build files, which is exactly why the build is committed first). In **none** mode (no git), aggregate the **Files written/modified** that builder reported at each slice — that is the build's own record.
 - **Tests:** [N] tests, [N] passed (from the final inspection).
 - **Inspection issues:** `none` for a clean PASS — otherwise note what wasn't clean: weak-fidelity tests that were fixed, slices that needed fix cycles, or anything still owed.
 - **Human sign-off owed:** the [Z] `[human-required]` items, listed — these are the human's to verify (`none` if zero).
