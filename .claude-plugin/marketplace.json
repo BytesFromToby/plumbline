@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "plumbline",
+  "description": "Single-plugin marketplace for Plumbline — a spec-driven, single-responsibility AI-agent workflow.",
+  "owner": {
+    "name": "BytesFromToby"
+  },
+  "plugins": [
+    {
+      "name": "plumbline",
+      "description": "A spec-driven workflow of single-responsibility AI-agent skills: scaffold to architect to foreman to builder to inspector, plus surveyor and the homeowner/walkthrough orchestrators. Trust-but-verify — agents build, evidence proves, and the spec stays the source of truth from end to end.",
+      "author": {
+        "name": "BytesFromToby"
+      },
+      "category": "development",
+      "source": "./",
+      "homepage": "https://github.com/BytesFromToby/plumbline"
+    }
+  ]
+}
