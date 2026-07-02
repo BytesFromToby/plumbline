@@ -1,3 +1,7 @@
+<!-- GENERATED from TERMS.md by `python tools/audit.py --write-terms` -- do not edit.
+     This is walkthrough's slice of the Plumbline contract: the preamble plus every
+     section whose audience line names it. TERMS.md is the source of truth. -->
+
 # Plumbline TERMS — the cross-skill contract
 
 **Version:** v1.0 (tracks the skill suite version)
@@ -20,47 +24,6 @@ keeps them identical.
   `python tools/audit.py --write-terms`; the audit fails while they are stale, so a slice
   can never silently drift from this file. A skill that cannot load its slice must stop
   and report, never guess the contract.
-
----
-
-## §1 — Spec tokens
-<!-- audience: architect, foreman, builder, inspector, surveyor, homeowner -->
-
-Producer: **architect** · Consumers: **foreman, builder, inspector, surveyor, homeowner**
-
-The spec (`Planning/specs/[feature]_spec.md`) is the source of truth. These strings are read literally.
-
-| Token | Meaning |
-|---|---|
-| `**Done when:**` | Heading above a feature's acceptance criteria. **Lowercase `when`.** Distinct from the blueprint step's `**Done When:**` (§2). |
-| `[automated]` | Tag on a Done-when item: a committed test judges it. Means *a test exists*, not an improvised check. |
-| `[human-required]` | Tag on a Done-when item: only a person can judge it. inspector captures evidence but never grades it. |
-| `## Scope` | Section with a `Does:` line and at least one hard `Does NOT:` line. |
-| `## Feature: [Name]` | One block per feature; every block must carry a `**Done when:**` section. |
-| `## Assumptions` | Low-surprise, cheap-to-change defaults made where a brief was silent. **Non-blocking.** Omitted when none. |
-| `## Open Questions` | A genuine fork that could not be safely defaulted. **Blocking** (§6). Omitted when none. |
-
-Every Done-when line carries **exactly one** tag — `[automated]` or `[human-required]`. No untagged criteria.
-
----
-
-## §2 — Blueprint tokens
-<!-- audience: foreman, builder, inspector -->
-
-Producer: **foreman** · Consumers: **builder, inspector**
-
-Blueprint: `Planning/blueprints/[feature]_BP.md`, or part files past 10 slices (§8).
-
-| Token | Meaning |
-|---|---|
-| `**Scope:**` | One-sentence slice scope — what the codebase can do once the slice is done. |
-| `**Build:**` | What a step implements: exact file paths and identifiers, no guessing. |
-| `**Test:**` | The runnable check for a step — the project's *real* test command (from `CLAUDE.md`). |
-| `**Done When:**` | A step's observable pass condition. **Capital `When`.** Step-level — distinct from the spec's `**Done when:**` (§1). |
-| `**Stuck If:**` | The condition under which a step requires human input. |
-| `- [ ] Complete` | A step's checkbox. builder flips `[ ]` → `[x]`. |
-| `[inspect]` | Slice-heading flag marking inspection is due (§5 for the trigger list). |
-| `- [ ] **Fully inspected**` | Blueprint-level completion box. **Only inspector ticks it** (§3). |
 
 ---
 
@@ -106,21 +69,6 @@ Orchestrators route on the **exact** string. A rename here silently mis-routes a
 | inspector | `BLOCKED: [reason]` | **halt** — a precondition is missing; **never** route to fix mode |
 
 `FAIL` vs `BLOCKED` must never be confused: `FAIL` has findings to repair (→ fix mode); `BLOCKED` has nothing to fix (→ halt for a human).
-
----
-
-## §5 — Inspection model
-<!-- audience: foreman, builder, inspector, homeowner -->
-
-| Term | Definition |
-|---|---|
-| **Inspection level** | Set by the caller; governs only where builder *stops for inspection* mid-build. Values: `full` (stop after every slice) · `flagged` (stop only at `[inspect]` slices — **the default**) · `none` (no mid-build stops). The **final sign-off always runs**, whatever the level. |
-| **`[inspect]` trigger** | A slice is flagged `[inspect]` when it touches one of: **schema · auth/security · destructive operation · cross-module seam.** (Canonical wording — use this list verbatim.) |
-| **Builder checkpoint** | End of an unflagged slice: tests green → continue. |
-| **Inspection due** | End of an `[inspect]` slice under `full`/`flagged`: inspector runs before code stacks on it. |
-| **Deferred inspection** | An `[inspect]` slice a `none` run skipped mid-build; the final inspector sweep inspects it. **No `[inspect]` slice ships uninspected.** |
-| **Final sign-off** | The terminal inspection of the whole feature against the spec's `**Done when:**` items. Always independent, always runs. |
-| **Fix mode / fix loop** | A `FAIL` routes to builder **fix mode** (the failure items become the step list; builder returns `FIXES_COMPLETE` or `STUCK`). The orchestrator re-inspects with a **fresh** inspector and bounds the retry (homeowner: **3 fix⇄inspect rounds per slice**, tunable); exceed → halt. |
 
 ---
 
@@ -181,17 +129,6 @@ Every skill must agree byte-for-byte. `[feature]` is the feature's lowercase slu
 | `CLAUDE.md` | scaffold (writes) / architect (fills) | the project contract (§9) |
 
 **Every generated file under `output/` carries `_YYYY-MM-DD_HH-MM`** (hyphens) — so reruns sort by time and never overwrite a prior run. Blueprint **stamps** use `HH:MM` (colon — they are text, not filenames). The append-only decision log stays date-only (`[feature]_YYYY-MM-DD.md`).
-
----
-
-## §9 — Document classes (surveyor)
-<!-- audience: surveyor -->
-
-| Class | Identified by | Has `**Done when:**`? |
-|---|---|---|
-| **Feature spec** | `**Done when:**` items | yes — checked for drift and test backing |
-| **Reference doc** | lives in `Planning/reference/` | no — definitional; check only that its terms still match code/specs |
-| **Architecture doc** | `docs/architecture.md` | no — check only that the modules it names still exist |
 
 ---
 

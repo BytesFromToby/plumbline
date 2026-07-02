@@ -1,3 +1,7 @@
+<!-- GENERATED from TERMS.md by `python tools/audit.py --write-terms` -- do not edit.
+     This is builder's slice of the Plumbline contract: the preamble plus every
+     section whose audience line names it. TERMS.md is the source of truth. -->
+
 # Plumbline TERMS — the cross-skill contract
 
 **Version:** v1.0 (tracks the skill suite version)
@@ -142,24 +146,6 @@ Decision rules more than one skill applies. The **test** is the contract — kee
 
 ---
 
-## §7 — System invariants
-<!-- audience: homeowner, walkthrough -->
-
-Cross-skill guarantees the framework depends on. Each worker skill asserts its own invariants
-in its own body; this registry is the auditor's oracle and the **orchestrators'** map of the
-boundaries they sequence across — only they load it at runtime.
-
-- **Spec is truth.** architect writes it; builder checks its work against it; inspector verifies the running software against it. Where code and spec disagree, fix one deliberately — no skill silently builds the wrong thing.
-- **No read-ahead.** builder reads only its assigned slice (and the part file holding it), never later slices/parts. This invariant is what makes forward constraints sound.
-- **Forward constraint.** A cross-slice (or cross-part) dependency foreman writes into the *earlier* step's `**Build:**` text, precisely because builder never reads ahead.
-- **Committed test.** A test, kept beside the code, that *encodes* an `[automated]` Done-when item. foreman plans one per `[automated]` item; builder writes it; inspector runs it; surveyor checks it exists. An improvised check is not a committed test.
-- **Fresh eyes / structural independence.** inspector verifies only from artifacts (spec, blueprint, run/demo command, running software), never from the build conversation — ideally a separate subagent. Orchestrators spawn inspector fresh; builder never grades its own work.
-- **Convention-coupled, not call-coupled.** Single-responsibility skills never call each other; they share file contracts and are sequenced by data dependency. Only the orchestrators (homeowner, walkthrough) invoke skills, and only to sequence — they reimplement nothing.
-- **No stage does the next one's job.** inspector can't edit the spec or a criterion to pass; builder can't invent requirements; surveyor and inspector never fix code.
-- **Size flag.** A spec trips the flag past **6 features**, **~500 lines**, or any single feature **~150 lines** (tunable defaults). architect flags but **never splits**; restructure is a human decision. The flag never blocks a build.
-
----
-
 ## §8 — Paths & naming
 <!-- audience: scaffold, architect, foreman, builder, inspector, surveyor, homeowner, walkthrough -->
 
@@ -181,29 +167,3 @@ Every skill must agree byte-for-byte. `[feature]` is the feature's lowercase slu
 | `CLAUDE.md` | scaffold (writes) / architect (fills) | the project contract (§9) |
 
 **Every generated file under `output/` carries `_YYYY-MM-DD_HH-MM`** (hyphens) — so reruns sort by time and never overwrite a prior run. Blueprint **stamps** use `HH:MM` (colon — they are text, not filenames). The append-only decision log stays date-only (`[feature]_YYYY-MM-DD.md`).
-
----
-
-## §9 — Document classes (surveyor)
-<!-- audience: surveyor -->
-
-| Class | Identified by | Has `**Done when:**`? |
-|---|---|---|
-| **Feature spec** | `**Done when:**` items | yes — checked for drift and test backing |
-| **Reference doc** | lives in `Planning/reference/` | no — definitional; check only that its terms still match code/specs |
-| **Architecture doc** | `docs/architecture.md` | no — check only that the modules it names still exist |
-
----
-
-## §10 — Contract & lifecycle terms
-<!-- audience: scaffold, architect, inspector, homeowner, walkthrough -->
-
-| Term | Definition |
-|---|---|
-| `CLAUDE.md` | The per-project contract scaffold writes and every skill reads: identity, stack, commands, change rules, folder map, Plumbline version stamp. |
-| `[pending — architect]` | Placeholder scaffold leaves in `CLAUDE.md` for **Stack** and **Commands**. **architect** fills them when it writes the first spec — the one time architect writes to the contract. walkthrough must route an unfilled placeholder to Recommendations, **never fill it**. |
-| `UI evidence tool` | A `CLAUDE.md` **Commands** line — `- UI evidence tool: <tool>` (e.g. `playwright (python)`) — that **architect** adds when the spec calls for a browser UI and **inspector** reads to choose its capture engine. Match the key exactly: inspector greps the literal `UI evidence tool` (no hyphen). |
-| `History` mode | A `CLAUDE.md` field — `git` (**default**) or `none`. `git`: scaffold inits git, every change ends in a commit, history is the git log. `none`: no git; history is the dated artifact trail (`docs/decisions/` + `output/` reports + blueprint stamps) — a full audit trail, no per-file diffs, no manual changelog. scaffold sets it; the Change-rules terminal step and homeowner's closing file-list both branch on it. |
-| **Quick Path / Full Path** | The change-rules in `CLAUDE.md`. Quick Path: no files added/removed/renamed (new *test* files excepted), no schema/core-logic change → edit, test, commit. Full Path: everything else → spec, code, test, inspect, decision doc, commit. |
-| **Build mode / Maintain mode** | Build = idea → verified code (scaffold → architect → foreman → builder → inspector). Maintain = keep built code honest (surveyor, inspector, walkthrough). |
-| **Orchestrator** | A skill that sequences others without reimplementing them: **homeowner** (build), **walkthrough** (maintain). |

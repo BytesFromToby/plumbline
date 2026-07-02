@@ -1,3 +1,7 @@
+<!-- GENERATED from TERMS.md by `python tools/audit.py --write-terms` -- do not edit.
+     This is homeowner's slice of the Plumbline contract: the preamble plus every
+     section whose audience line names it. TERMS.md is the source of truth. -->
+
 # Plumbline TERMS — the cross-skill contract
 
 **Version:** v1.0 (tracks the skill suite version)
@@ -41,42 +45,6 @@ The spec (`Planning/specs/[feature]_spec.md`) is the source of truth. These stri
 | `## Open Questions` | A genuine fork that could not be safely defaulted. **Blocking** (§6). Omitted when none. |
 
 Every Done-when line carries **exactly one** tag — `[automated]` or `[human-required]`. No untagged criteria.
-
----
-
-## §2 — Blueprint tokens
-<!-- audience: foreman, builder, inspector -->
-
-Producer: **foreman** · Consumers: **builder, inspector**
-
-Blueprint: `Planning/blueprints/[feature]_BP.md`, or part files past 10 slices (§8).
-
-| Token | Meaning |
-|---|---|
-| `**Scope:**` | One-sentence slice scope — what the codebase can do once the slice is done. |
-| `**Build:**` | What a step implements: exact file paths and identifiers, no guessing. |
-| `**Test:**` | The runnable check for a step — the project's *real* test command (from `CLAUDE.md`). |
-| `**Done When:**` | A step's observable pass condition. **Capital `When`.** Step-level — distinct from the spec's `**Done when:**` (§1). |
-| `**Stuck If:**` | The condition under which a step requires human input. |
-| `- [ ] Complete` | A step's checkbox. builder flips `[ ]` → `[x]`. |
-| `[inspect]` | Slice-heading flag marking inspection is due (§5 for the trigger list). |
-| `- [ ] **Fully inspected**` | Blueprint-level completion box. **Only inspector ticks it** (§3). |
-
----
-
-## §3 — Marks written into the blueprint
-<!-- audience: foreman, builder, inspector, walkthrough -->
-
-| Token | Producer → Consumers | Meaning |
-|---|---|---|
-| `**Deviation:** [what changed and why]` | builder → inspector, foreman, walkthrough | A behavior-preserving change to *how* a step was done (§6). Logged under the step's checkbox. |
-| `**Fix:** [item] — [what changed] (YYYY-MM-DD)` | builder (fix mode) → inspector | A repair logged under the affected slice. |
-| `**STALE — spec changed YYYY-MM-DD**` | foreman → builder, inspector | Marks a slice whose spec basis changed on regeneration; the slice is rewritten, its prior stamp kept. |
-| `✅ Inspector: PASS — YYYY-MM-DD HH:MM` | inspector → builder, foreman, inspector | Dated pass stamp on a slice or the final checkpoint. **Colon in the time** (`HH:MM`). |
-| `❌ Inspector: FAIL — YYYY-MM-DD HH:MM — off spec: [criterion] — expected [x], observed [y]` | inspector → builder (fix mode) | Dated fail stamp; names the violated criterion + expected-vs-observed. A final fail appends `— see output/inspect/Inspect_[feature]_Final_[date]_[HH-MM].md`. |
-| `- [x] **Fully inspected**` | inspector only | Ticked only when every `[inspect]` slice **and** the final sign-off passed. Never ticked by hand or while any item failed. |
-
-These are the **only** writes inspector and builder make to the blueprint's structure; they record results, never change a step, Done-When, or scope.
 
 ---
 
@@ -181,17 +149,6 @@ Every skill must agree byte-for-byte. `[feature]` is the feature's lowercase slu
 | `CLAUDE.md` | scaffold (writes) / architect (fills) | the project contract (§9) |
 
 **Every generated file under `output/` carries `_YYYY-MM-DD_HH-MM`** (hyphens) — so reruns sort by time and never overwrite a prior run. Blueprint **stamps** use `HH:MM` (colon — they are text, not filenames). The append-only decision log stays date-only (`[feature]_YYYY-MM-DD.md`).
-
----
-
-## §9 — Document classes (surveyor)
-<!-- audience: surveyor -->
-
-| Class | Identified by | Has `**Done when:**`? |
-|---|---|---|
-| **Feature spec** | `**Done when:**` items | yes — checked for drift and test backing |
-| **Reference doc** | lives in `Planning/reference/` | no — definitional; check only that its terms still match code/specs |
-| **Architecture doc** | `docs/architecture.md` | no — check only that the modules it names still exist |
 
 ---
 

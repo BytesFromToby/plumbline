@@ -1,3 +1,7 @@
+<!-- GENERATED from TERMS.md by `python tools/audit.py --write-terms` -- do not edit.
+     This is architect's slice of the Plumbline contract: the preamble plus every
+     section whose audience line names it. TERMS.md is the source of truth. -->
+
 # Plumbline TERMS — the cross-skill contract
 
 **Version:** v1.0 (tracks the skill suite version)
@@ -44,42 +48,6 @@ Every Done-when line carries **exactly one** tag — `[automated]` or `[human-re
 
 ---
 
-## §2 — Blueprint tokens
-<!-- audience: foreman, builder, inspector -->
-
-Producer: **foreman** · Consumers: **builder, inspector**
-
-Blueprint: `Planning/blueprints/[feature]_BP.md`, or part files past 10 slices (§8).
-
-| Token | Meaning |
-|---|---|
-| `**Scope:**` | One-sentence slice scope — what the codebase can do once the slice is done. |
-| `**Build:**` | What a step implements: exact file paths and identifiers, no guessing. |
-| `**Test:**` | The runnable check for a step — the project's *real* test command (from `CLAUDE.md`). |
-| `**Done When:**` | A step's observable pass condition. **Capital `When`.** Step-level — distinct from the spec's `**Done when:**` (§1). |
-| `**Stuck If:**` | The condition under which a step requires human input. |
-| `- [ ] Complete` | A step's checkbox. builder flips `[ ]` → `[x]`. |
-| `[inspect]` | Slice-heading flag marking inspection is due (§5 for the trigger list). |
-| `- [ ] **Fully inspected**` | Blueprint-level completion box. **Only inspector ticks it** (§3). |
-
----
-
-## §3 — Marks written into the blueprint
-<!-- audience: foreman, builder, inspector, walkthrough -->
-
-| Token | Producer → Consumers | Meaning |
-|---|---|---|
-| `**Deviation:** [what changed and why]` | builder → inspector, foreman, walkthrough | A behavior-preserving change to *how* a step was done (§6). Logged under the step's checkbox. |
-| `**Fix:** [item] — [what changed] (YYYY-MM-DD)` | builder (fix mode) → inspector | A repair logged under the affected slice. |
-| `**STALE — spec changed YYYY-MM-DD**` | foreman → builder, inspector | Marks a slice whose spec basis changed on regeneration; the slice is rewritten, its prior stamp kept. |
-| `✅ Inspector: PASS — YYYY-MM-DD HH:MM` | inspector → builder, foreman, inspector | Dated pass stamp on a slice or the final checkpoint. **Colon in the time** (`HH:MM`). |
-| `❌ Inspector: FAIL — YYYY-MM-DD HH:MM — off spec: [criterion] — expected [x], observed [y]` | inspector → builder (fix mode) | Dated fail stamp; names the violated criterion + expected-vs-observed. A final fail appends `— see output/inspect/Inspect_[feature]_Final_[date]_[HH-MM].md`. |
-| `- [x] **Fully inspected**` | inspector only | Ticked only when every `[inspect]` slice **and** the final sign-off passed. Never ticked by hand or while any item failed. |
-
-These are the **only** writes inspector and builder make to the blueprint's structure; they record results, never change a step, Done-When, or scope.
-
----
-
 ## §4 — Status lines (the routing vocabulary)
 <!-- audience: architect, foreman, builder, inspector, homeowner, walkthrough -->
 
@@ -109,21 +77,6 @@ Orchestrators route on the **exact** string. A rename here silently mis-routes a
 
 ---
 
-## §5 — Inspection model
-<!-- audience: foreman, builder, inspector, homeowner -->
-
-| Term | Definition |
-|---|---|
-| **Inspection level** | Set by the caller; governs only where builder *stops for inspection* mid-build. Values: `full` (stop after every slice) · `flagged` (stop only at `[inspect]` slices — **the default**) · `none` (no mid-build stops). The **final sign-off always runs**, whatever the level. |
-| **`[inspect]` trigger** | A slice is flagged `[inspect]` when it touches one of: **schema · auth/security · destructive operation · cross-module seam.** (Canonical wording — use this list verbatim.) |
-| **Builder checkpoint** | End of an unflagged slice: tests green → continue. |
-| **Inspection due** | End of an `[inspect]` slice under `full`/`flagged`: inspector runs before code stacks on it. |
-| **Deferred inspection** | An `[inspect]` slice a `none` run skipped mid-build; the final inspector sweep inspects it. **No `[inspect]` slice ships uninspected.** |
-| **Final sign-off** | The terminal inspection of the whole feature against the spec's `**Done when:**` items. Always independent, always runs. |
-| **Fix mode / fix loop** | A `FAIL` routes to builder **fix mode** (the failure items become the step list; builder returns `FIXES_COMPLETE` or `STUCK`). The orchestrator re-inspects with a **fresh** inspector and bounds the retry (homeowner: **3 fix⇄inspect rounds per slice**, tunable); exceed → halt. |
-
----
-
 ## §6 — Shared decision tests
 <!-- audience: architect, foreman, builder, inspector, surveyor, homeowner, walkthrough -->
 
@@ -139,24 +92,6 @@ Decision rules more than one skill applies. The **test** is the contract — kee
 
 - **Test fidelity** — inspector judges; surveyor's static counterpart; foreman plans for it.
   Test: *would this test fail if the criterion were violated?* No → the criterion is **unproven**, however green the run — a finding routed to builder, never a pass. Recorded `fidelity: ok` or `fidelity: weak — [reason]`.
-
----
-
-## §7 — System invariants
-<!-- audience: homeowner, walkthrough -->
-
-Cross-skill guarantees the framework depends on. Each worker skill asserts its own invariants
-in its own body; this registry is the auditor's oracle and the **orchestrators'** map of the
-boundaries they sequence across — only they load it at runtime.
-
-- **Spec is truth.** architect writes it; builder checks its work against it; inspector verifies the running software against it. Where code and spec disagree, fix one deliberately — no skill silently builds the wrong thing.
-- **No read-ahead.** builder reads only its assigned slice (and the part file holding it), never later slices/parts. This invariant is what makes forward constraints sound.
-- **Forward constraint.** A cross-slice (or cross-part) dependency foreman writes into the *earlier* step's `**Build:**` text, precisely because builder never reads ahead.
-- **Committed test.** A test, kept beside the code, that *encodes* an `[automated]` Done-when item. foreman plans one per `[automated]` item; builder writes it; inspector runs it; surveyor checks it exists. An improvised check is not a committed test.
-- **Fresh eyes / structural independence.** inspector verifies only from artifacts (spec, blueprint, run/demo command, running software), never from the build conversation — ideally a separate subagent. Orchestrators spawn inspector fresh; builder never grades its own work.
-- **Convention-coupled, not call-coupled.** Single-responsibility skills never call each other; they share file contracts and are sequenced by data dependency. Only the orchestrators (homeowner, walkthrough) invoke skills, and only to sequence — they reimplement nothing.
-- **No stage does the next one's job.** inspector can't edit the spec or a criterion to pass; builder can't invent requirements; surveyor and inspector never fix code.
-- **Size flag.** A spec trips the flag past **6 features**, **~500 lines**, or any single feature **~150 lines** (tunable defaults). architect flags but **never splits**; restructure is a human decision. The flag never blocks a build.
 
 ---
 
@@ -181,17 +116,6 @@ Every skill must agree byte-for-byte. `[feature]` is the feature's lowercase slu
 | `CLAUDE.md` | scaffold (writes) / architect (fills) | the project contract (§9) |
 
 **Every generated file under `output/` carries `_YYYY-MM-DD_HH-MM`** (hyphens) — so reruns sort by time and never overwrite a prior run. Blueprint **stamps** use `HH:MM` (colon — they are text, not filenames). The append-only decision log stays date-only (`[feature]_YYYY-MM-DD.md`).
-
----
-
-## §9 — Document classes (surveyor)
-<!-- audience: surveyor -->
-
-| Class | Identified by | Has `**Done when:**`? |
-|---|---|---|
-| **Feature spec** | `**Done when:**` items | yes — checked for drift and test backing |
-| **Reference doc** | lives in `Planning/reference/` | no — definitional; check only that its terms still match code/specs |
-| **Architecture doc** | `docs/architecture.md` | no — check only that the modules it names still exist |
 
 ---
 

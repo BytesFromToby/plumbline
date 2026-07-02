@@ -6,7 +6,7 @@ version: 1.0
 
 ## Contract terms — read first
 
-Before anything else, read the Plumbline contract at **`${CLAUDE_PLUGIN_ROOT}/TERMS.md`** (the `TERMS.md` in the Plumbline root, beside the skills). It is the source of truth for every shared token, status line, and file-naming pattern this skill reads or writes — reproduce them **verbatim**. **If you cannot load TERMS.md, stop and report; do not guess the contract.**
+Before anything else, read your slice of the Plumbline contract at **`${CLAUDE_PLUGIN_ROOT}/terms/scaffold.md`** — generated from the root `TERMS.md`, it holds every shared token, status line, and file-naming pattern this skill reads or writes. Reproduce them **verbatim**. **If you cannot load it, stop and report; do not guess the contract.**
 
 ---
 

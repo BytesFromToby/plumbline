@@ -193,9 +193,11 @@ The spec *format* isn't copied into the contract — it's authoritative in `arch
 
 `CLAUDE.md` is the per-*project* contract. `TERMS.md` is the per-*framework* one: the single, canonical definition of every token, status line, file path, and invariant the skills share — `**Done when:**`, the `[automated]` / `[human-required]` tags, the routing status lines, the `[inspect]` trigger list, and the rest.
 
-It exists because a skill is read **cold**. A fresh agent — or a different model — loads one skill with none of the context it was written in, so any shared convention that lives only "in the author's head" is a silent failure waiting to happen: a stamp spelled two ways, a status line an orchestrator no longer recognizes. TERMS makes that shared ground explicit. Every skill reads it first (`${CLAUDE_PLUGIN_ROOT}/TERMS.md`) and stops if it can't load it, rather than guessing.
+It exists because a skill is read **cold**. A fresh agent — or a different model — loads one skill with none of the context it was written in, so any shared convention that lives only "in the author's head" is a silent failure waiting to happen: a stamp spelled two ways, a status line an orchestrator no longer recognizes. TERMS makes that shared ground explicit.
 
-And the contract is **verified, not decorative.** `tools/audit.py` checks every skill and agent against it — frontmatter validity, the load-line, reference resolvability, skill-name resolution — deterministically, on every push via CI. `tools/auditor.md` is the semantic half: a runbook for the producer/consumer agreement a script can't judge. It's the framework's own "trust, but verify" turned on itself.
+At runtime, though, no skill reads the whole thing. Each TERMS section carries an `<!-- audience: ... -->` line naming the skills bound by it, and `tools/audit.py --write-terms` generates a per-skill **slice** — `terms/<skill>.md` — holding only those sections. A skill reads its slice first (`${CLAUDE_PLUGIN_ROOT}/terms/<skill>.md`) and stops if it can't load it, rather than guessing. The point: an orchestrator spawns many subagents per run, and every spawn was paying to load contract sections that didn't bind it — the slices keep the runtime drift-guard while cutting that fixed cost roughly in half (`scaffold` loads about a third of the full contract).
+
+And the contract is **verified, not decorative.** `tools/audit.py` checks every skill and agent against it — frontmatter validity, the slice load-line, reference resolvability, skill-name resolution, and that every generated slice still matches `TERMS.md` — deterministically, on every push via CI. A slice can't drift from the contract: it's generated, and the audit fails while it's stale. `tools/auditor.md` is the semantic half: a runbook for the producer/consumer agreement a script can't judge. It's the framework's own "trust, but verify" turned on itself.
 
 ---
 
@@ -215,10 +217,12 @@ plumbline/
 ├── skills/        # the 8 skills (architect · foreman · builder · inspector ·
 │                  #   scaffold · surveyor · walkthrough · homeowner)
 ├── agents/        # thin worker subagents that delegate to the skills
-├── TERMS.md       # the cross-skill contract — every skill reads it first
+├── TERMS.md       # the cross-skill contract — source of truth, audience-tagged per section
+├── terms/         # generated per-skill slices of TERMS.md — what each skill reads at runtime
 ├── tools/
-│   ├── audit.py   # deterministic contract audit (run in CI)
-│   └── auditor.md # the semantic-pass runbook
+│   ├── audit.py   # deterministic contract audit + terms/ slice generator (run in CI)
+│   ├── auditor.md # the semantic-pass runbook
+│   └── README.md  # how the audit system works (portable to other projects)
 ├── .github/workflows/audit.yml   # runs the audit on every push
 └── README.md · LICENSE
 ```

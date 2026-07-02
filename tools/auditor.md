@@ -7,10 +7,15 @@ after changing any skill, agent, or `TERMS.md`, and before a release.
 
 ## Step 1 — Mechanical pass (must be green first)
 
-Run `python tools/audit.py`. It checks frontmatter validity, the `${CLAUDE_PLUGIN_ROOT}/TERMS.md`
-load-line in every skill, `${CLAUDE_PLUGIN_ROOT}` reference resolvability, and skill-name
-resolution. Exit 0 = clean. Fix every finding before going on — they are unambiguous, so there is
+Run `python tools/audit.py`. It checks frontmatter validity, each skill's
+`${CLAUDE_PLUGIN_ROOT}/terms/<skill>.md` load-line, `${CLAUDE_PLUGIN_ROOT}` reference
+resolvability, skill-name resolution, and that the generated `terms/` slices are fresh against
+`TERMS.md`. Exit 0 = clean. Fix every finding before going on — they are unambiguous, so there is
 nothing to judge.
+
+**After any edit to `TERMS.md`** (content or an `<!-- audience: ... -->` line), regenerate the
+runtime slices with `python tools/audit.py --write-terms` and commit them with the change — the
+audit stays red until you do. Never edit a `terms/*.md` slice by hand; they are generated output.
 
 ## Step 2 — Semantic pass (judgment, against TERMS as the oracle)
 
