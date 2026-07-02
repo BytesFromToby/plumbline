@@ -1,14 +1,8 @@
 ---
 name: homeowner
 description: Autonomous build orchestrator — takes a written brief to verified code without a human gate, sequencing scaffold, architect, foreman, builder, and inspector. Halts and surfaces when a spec has Open Questions, a builder gets stuck, or an inspection fails. The build-mode counterpart to walkthrough (maintain mode).
-version: 0.1
+version: 1.0
 ---
-
-<!-- DRAFT (v0.1). All six phases + closing report are written; pending end-to-end review. -->
-
-<!-- PENDING INTEGRATION (README, deferred): README.md still needs an output/homeowner/ row in the
-     Folder conventions table, and its CLAUDE.md-contract section updated (architect, not scaffold,
-     now fills Stack/Commands). scaffold already creates output/homeowner/. -->
 
 ## Contract terms — read first
 
@@ -24,9 +18,8 @@ surfaces** rather than guessing whenever a stage reports a gap it can't safely c
 
 **Not for supervised builds.** When a human is available to interview and approve the spec, run the
 skills by hand — `architect` in interview mode, review the spec yourself, then `foreman` → `builder`
-→ `inspector`. That keeps the human spec gate. Homeowner removes that gate and stands in its place
-itself, reviewing the spec against the brief it holds (Phase 3) — the principal checking a delegate's
-work, not a self-graded build.
+→ `inspector`. That keeps the human spec gate. Homeowner removes that gate and stands its own
+Phase 3 spec review in its place.
 
 ---
 
@@ -97,16 +90,11 @@ against; non-blocking) or **Open Questions** (genuine forks it couldn't safely d
 | `+ SIZE_FLAGGED` | Append to either of the above; proceed. The size question is handled in Phase 3; the flag never blocks on its own. |
 | `OPEN_QUESTIONS: N` | **Halt.** Surface the spec path and the N questions verbatim. A human resolves them before the build resumes. Do **not** answer them yourself, do **not** run the spec review, do **not** proceed. |
 
-**Why `ASSUMPTIONS` proceeds but `OPEN_QUESTIONS` halts:** architect has already sorted the brief's
-gaps by cost. An **Assumption** is a default that's low-surprise *and* cheap to change if wrong — the
-spec is fully buildable against it, and halting an unattended run to confirm a cheap default defeats
-the point of homeowner. An **Open Question** is a fork architect *couldn't* safely default — answering
-it changes the build, so proceeding risks a rebuild; a human is needed regardless, and foreman would
-refuse the spec anyway. Phase 3 still gives the assumptions a second look (see below), so a
-misclassified fork hiding in the Assumptions list gets caught before the build.
-
-**Architect never calls the next stage — you do.** It reports; Homeowner sequences. That boundary is
-what keeps every skill independently runnable (convention-coupled, not call-coupled).
+**Why `ASSUMPTIONS` proceeds but `OPEN_QUESTIONS` halts:** the two lists differ by the contract's
+cost test (§6) — an Assumption is cheap to change if wrong; an Open Question forks the build.
+Halting an unattended run over a cheap default defeats the point of homeowner; building through a
+fork risks a rebuild. Phase 3 gives the assumptions a second look, so a misclassified fork still
+gets caught before the build.
 
 ### Phase 3 — Spec self-review (the gate)
 
@@ -150,7 +138,8 @@ invisible.
 A spec can be both faithful and too-big; `TOO_BIG` wins (halt). **Only `FAITHFUL` proceeds.**
 
 **Then log the verdict.** Append to the run log `output/homeowner/HomeownerLog_YYYY-MM-DD_HH-MM.md`. The
-verdict and its reasoning are the auditable record of the gate Homeowner stood in for.
+verdict and its reasoning are the auditable record of the gate Homeowner stood in for. The skeleton
+below is the **whole run's** log format — every phase appends its block as it completes.
 
 ```
 # Homeowner Run — [feature] · YYYY-MM-DD
@@ -197,11 +186,6 @@ Blueprint: Fully inspected [x]
 Outcome: SIGNED OFF (pending [Z] human items) | HALTED: <reason>
 ```
 
-<!-- LOG LIFECYCLE (pending Phase 1 design): the run log should be opened at run start with the
-     brief recorded immediately, so a Phase 2 OPEN_QUESTIONS halt is also captured. Every phase
-     appends. Phase 3 is just the first fully-designed writer; the format above is the run-long
-     skeleton, not a Phase-3-only artifact. -->
-
 ### Phase 4 — Blueprint
 
 Only a `FAITHFUL` spec reaches here. Spawn **foreman** as a subagent against it. Foreman is
@@ -235,8 +219,7 @@ foreman can't write real `Test:` lines against. That's a genuine human fix, not 
 If instead a block cites a spec reason (missing spec, Open Questions, no Done-when), that means the
 Phase 3 gate let something through — surface it as a **gate miss**, don't paper over it by re-running.
 
-**Foreman never calls the next stage — you do.** It reports; Homeowner sequences (convention-coupled,
-not call-coupled). Then append the Phase 4 block to the run log.
+Then append the Phase 4 block to the run log.
 
 ### Phase 5 — Build til green
 
@@ -287,10 +270,9 @@ improvised:
    inspect-fix rounds (it catches the oscillation a per-test cap can't: fixes that go green yet keep
    failing inspection, e.g. a low-fidelity test the inspector won't accept).
 
-**Independence is structural here.** Every inspector is a **fresh subagent** — the one spawned to
-re-check a fix never saw the build *or* the previous inspection. And **Homeowner is the only thing
-that ever spawns inspector**; builder reports a status and never grades its own work. That boundary
-is what keeps the proof honest in an unattended run.
+Every inspector is a **fresh subagent** — the one spawned to re-check a fix never saw the build
+*or* the previous inspection — and **only Homeowner ever spawns inspector**; builder reports a
+status and never grades its own work.
 
 Then append the Phase 5 block to the run log — every inspected slice, every fix cycle, the builder's
 final status, and the deviations path.
@@ -302,10 +284,9 @@ verifies the running software against the **spec's `**Done when:**` items** — 
 criteria, which Phase 5's per-slice checks never touched (mid-slice verifies slice scope, not spec
 items). Nothing is signed off until this passes.
 
-**Spawn inspector as a fresh subagent**, scope **final**. Fresh is non-negotiable: it must not be a
-continuation of the build *or* of any Phase 5 mid-build inspection — "no stake in the outcome" is
-structural only if the agent never saw the work. Pass it the feature, `final`, and the run/demo
-command (it reads spec, blueprint parts, and `CLAUDE.md` itself).
+**Spawn inspector as a fresh subagent**, scope **final** — not a continuation of the build *or*
+of any Phase 5 mid-build inspection. Pass it the feature, `final`, and the run/demo command (it
+reads the spec, searches the blueprint parts for what's owed, and reads `CLAUDE.md` itself).
 
 It verifies every spec Done-when item, judges test fidelity, captures evidence, writes
 `output/inspect/Inspect_[feature]_Final_[date]_[HH-MM].md`, and — on a clean pass — ticks the
