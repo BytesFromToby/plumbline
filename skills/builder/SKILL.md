@@ -118,6 +118,12 @@ freestyle patching. Input depends on which inspection failed:
   tests to see the specifics.
 - **Final fail** — the findings are the final report (`output/inspect/Inspect_[feature]_Final_*.md`).
 
+**Fix mode's read-set is the findings, the affected slice, and `CLAUDE.md` — skip the full
+Step 1 orientation.** Do not re-read the whole blueprint or the spec cover to cover: the failure
+items and the slice they live in define the work. Open the spec only when a failure item turns
+on what the spec actually requires — and if the fix would *change* behavior, an interface, or
+what a criterion means, that is a **Stuck**, not a fix.
+
 - **The failure items are your step list.** Work them in order. For each: the item text is the
   Done When; the stamp note / report evidence is your starting diagnosis.
 - All normal rules apply unchanged — spec check, stuck rules, deviation notes, the three-attempt
