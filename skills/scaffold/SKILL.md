@@ -60,7 +60,21 @@ If everything already exists, report that and stop.
 
 Create any missing folders from the **What it creates** list above.
 
-**Empty folders and git.** Git does not track empty directories, so in **git** mode drop a `.gitkeep` file in each folder that is still empty — that keeps the guide-rail skeleton in the first commit and on a fresh clone; the skill that owns a folder (e.g. `output/inspect/` → inspector) replaces it with real output later. In **none** mode the folders simply exist on disk, so no `.gitkeep` is needed.
+**Empty folders and git.** Git does not track empty directories, so in **git** mode drop a `.gitkeep` file in each folder that is still empty — that keeps the guide-rail skeleton in the first commit and on a fresh clone. Write each `.gitkeep` as a **single purpose line** rather than an empty file, so the folder documents itself to anyone who opens it cold:
+
+```
+Planning/specs/ — specs, the single source of truth for behavior. Written by architect.
+Planning/reference/ — shared definitions specs cite. Filled as specs need it.
+Planning/blueprints/ — per-feature build plans. Written by foreman.
+docs/decisions/ — why a non-obvious choice was made. Append-only.
+output/inspect/ — proof reports. Written by inspector.
+output/deviations/ — deviation logs. Written by builder.
+output/surveys/ — drift reports. Written by surveyor.
+output/walkthrough/ — walkthrough logs + recommendations. Written by walkthrough.
+output/homeowner/ — run logs. Written by homeowner.
+```
+
+The `.gitkeep` stays when real output arrives — it is the folder's label, not just a placeholder. In **none** mode the folders simply exist on disk with no `.gitkeep`; the contract's "Where things live" table is the routing there.
 
 **git mode (default):** if the project isn't already a git repository, `git init`, write a
 **generic** `.gitignore` (OS/editor cruft and common ignores — the stack isn't decided yet, so

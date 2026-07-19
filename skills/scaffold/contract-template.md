@@ -31,7 +31,7 @@ Mode: **git**   <!-- git (default) | none -->
 | `Planning/reference/` | Shared definitions specs cite (data models, constants) — fills as specs need it |
 | `Planning/blueprints/` | `foreman`'s per-feature build plans |
 | `docs/decisions/` | Why a non-obvious choice was made (`[feature]_YYYY-MM-DD.md`, append-only) |
-| `output/` | Skill output — `inspector` evidence, etc. |
+| `output/` | Skill output — `inspect/` (inspector proofs), `deviations/` (builder), `surveys/` (surveyor), `walkthrough/` (logs + recommendations), `homeowner/` (run logs) |
 | `docs/architecture.md` | The as-built system map — written once modules need one |
 
 (Folders are scaffolded empty up front as guide-rails; `docs/architecture.md` is written when modules need a map.)

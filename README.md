@@ -95,6 +95,12 @@ economy model a dependable builder.
 | `builder` | **economy** | fine-grained steps with exact names and addresses — the blueprint *is* the hand-holding |
 | `inspector` | strong | judges evidence and test fidelity; the last line of defense, never the place to save money |
 
+The orchestrators sit outside the table because they mostly sequence — but each holds one
+judgment seat of its own. `homeowner`'s is the spec self-review gate: it checks the spec against
+the brief with no human behind it, and a budget model there waves the wrong spec through for
+every stage after to build on. `walkthrough`'s is triage: deciding what's safely Quick-Path and
+what isn't. Run both strong.
+
 The blueprint's granularity isn't ceremony — it's the exchange rate. The finer the foreman
 plans, the cheaper the builder can be. And because the builder model can differ from run to run
 on the same project — it's not a known, stable thing — `foreman` always plans for the weakest

@@ -56,6 +56,14 @@ Run the **surveyor** skill to detect drift — do not reimplement detection here
 
 ### Phase 4 — Documentation
 Improve project docs for clarity: `CLAUDE.md`, `CONTEXT.md` / `REFERENCES.md`. Remove redundancy and stale info; make file maps scannable.
+
+**Walk test — judge the contract as an agent with no memory would:**
+1. From `CLAUDE.md` plus at most two more reads, can you answer *where am I* and *where do I go for task X* (find the current spec, its blueprint, the latest inspection)?
+2. Can you state build status purely by scanning `output/` and the blueprint's checkboxes — no prose summary required?
+3. Is `CLAUDE.md` carrying content that belongs in a spec, reference, or decision doc? Move the payload to its home and leave a pointer (a doc edit — Quick-Path).
+4. Is any fact stated in two places? Pick one home; link from the other.
+
+A walk-test failure that needs files moved or renamed is Full-Path — route it to Recommendations rather than fixing structure unattended.
 - **Do not edit skill files or other tooling.** If a skill or tool should change, write it to Recommendations — walkthrough does not rewrite its own machinery unattended.
 - **Never fill a `[pending — architect]` contract field.** If `CLAUDE.md`'s Stack or Commands are still placeholders, that's not a doc cleanup — it's drift (architect should have filled them at the first spec). Route it to **Recommendations** ("contract Stack/Commands never filled — run architect"); do not fabricate the stack or a run command yourself.
 
