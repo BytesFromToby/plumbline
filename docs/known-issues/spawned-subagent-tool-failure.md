@@ -1,6 +1,6 @@
 # Bug: Plumbline worker agents fail when spawned as subagents (halt after one tool call / empty tool output)
 
-**Status:** Open — casing fix attempted in v1.0.1, spawned-subagent behavior not yet re-verified.
+**Status:** Resolved (verified 2026-08-01). `plumbline:scaffold` spawned as a real subagent (Agent tool, no orchestrator) against a fresh throwaway project completed the full skill — 20 tool calls, folder skeleton, `CLAUDE.md`, `.gitignore`, and a real `git init` + commit, all confirmed on disk. No halt-after-one-read, no empty tool output. The v1.0.1 lowercase→capitalized `tools:` casing fix (see below) appears to have been the actual cause; leaving this doc as a record in case it resurfaces on a different model/environment.
 **Reported:** 2026-06-30
 **Affects:** `scaffold`, `architect`, `foreman`, `builder`, `inspector` (all worker agents) when spawned as subagents — e.g. by the `homeowner` orchestrator, or directly via the Agent/Task tool.
 **Does not affect:** the same skills invoked **inline** in the main session via the Skill tool; a **general-purpose** (non-Plumbline) subagent in the same environment.
