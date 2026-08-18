@@ -55,6 +55,7 @@ Before writing anything, plan the slices mentally.
 - **Write forward constraints.** The builder does not read ahead — you carry the cross-slice knowledge. When a later slice depends on a choice made in an earlier step, write the constraint into the earlier step's **Build** text (e.g. "Slice 3 extends this loader — keep the interface generic, don't hardcode the city template"). A builder should never need to see slice 3 to make slice 1's choice safely.
 - **Every step names its addresses.** Each step's **Build** text names the file path(s) it touches and the exact identifiers (functions, classes, routes, columns) it creates or modifies — taken from the spec or the existing code, never invented. The builder makes no naming or placement choices.
 - **Flag risky slices `[inspect]`.** Tag a slice's heading `[inspect]` when it touches a schema, auth/security, a destructive operation, or a cross-module seam. The flag marks *where inspection is due* — it doesn't itself force a stop. Whether a flagged slice halts for inspection is the **caller's inspection level** — `full` / `flagged` / `none` (see TERMS §5): an orchestrator running `flagged` always stops; a manual `none` run defers to final sign-off. Unflagged slices end at the builder's green-test checkpoint and flow on. The final slice is always inspected, at every level.
+- **Minimum inspection floor — every multi-slice build earns one independent check before final sign-off.** If applying the risk criteria above leaves *no* slice flagged, flag the single most consequential **non-final** slice: the one whose correctness the most later slices or `[automated]` Done-when items rest on — usually the core-logic slice. Tag its heading `[inspect] (floor)` so the reason reads as "no slice tripped the risk criteria, so this is the mandated minimum," not a risk call. This stops a run from stacking the whole build on an unchecked foundation and first meeting the inspector only at the end — the exact gap a `flagged`-mode orchestrator has no other way to close. **Exception:** a single-slice blueprint has no non-final slice; the final sign-off is its one check, so add no floor flag.
 - The final slice — the last slice of the last part file — always ends by verifying the spec's `**Done when:**` items
 
 **Step grain — plan for the weakest builder that might run it.** The model executing the blueprint is unknown at planning time and can differ run to run, so the grain can't be tuned to it. Plan fine-grained, always: exact addresses, one small move per step, nothing left to judgment. The asymmetry makes this the only safe choice — a strong builder following fine steps loses minutes; a weak builder improvising through coarse steps loses the build.
@@ -176,6 +177,7 @@ Re-read the blueprint against the spec. Verify:
 - Every `[automated]` Done-when item has a step that writes a committed test encoding it
 - Every `[human-required]` Done-when item is covered by the final verification step (inspector captures evidence)
 - No step invents behaviour not in the spec
+- **At least one slice is `[inspect]`-flagged** — from the risk criteria, or the `(floor)` flag when none qualified. A multi-slice blueprint with zero flags means the minimum-inspection floor was skipped; add it before handing off. (A single-slice blueprint is exempt — its final sign-off is the check.)
 - **If split into parts:** slice numbering is continuous across files, each part holds ≤10 slices, every non-last part ends on a checkpoint naming the next part, and only the last part carries the final spec-verification slice
 
 If anything is missing, fix it before reporting done.
@@ -188,7 +190,7 @@ Emit one report. A human reads the summary and acts on it; an orchestrator route
 
 **Summary — where things are and what's in the plan:**
 - **Blueprint:** `Planning/blueprints/[feature]_BP.md` — or, if split, every part: `[feature]_BP_p-1.md`, `[feature]_BP_p-2.md`, …
-- **Slices:** total count, and which are `[inspect]`-flagged (schema / auth / destructive / cross-module seam).
+- **Slices:** total count, and which are `[inspect]`-flagged (schema / auth / destructive / cross-module seam) — noting any `(floor)` flag added because no slice tripped the risk criteria.
 - **Test coverage:** every `[automated]` Done-when item has a committed test planned (from Step 4) — or list the gaps.
 
 **Next step:** Run **builder** — give it the blueprint and the slice to start on (Slice 1 of part 1 unless told otherwise).
