@@ -133,22 +133,24 @@ boundaries they sequence across — only they load it at runtime.
 
 Every skill must agree byte-for-byte. `[feature]` is the feature's lowercase slug, identical across its spec, blueprint, and output files. Dates are `YYYY-MM-DD`.
 
+**The tree splits in two.** `Planning/` holds **human intent** — the specs and reference the build is judged against. `Plumbline/` holds **everything the workflow generates** — blueprints, decision logs, and every skill's reports. Code lives wherever the stack puts it, outside both.
+
 | Path / pattern | Owner | Notes |
 |---|---|---|
 | `Planning/specs/[feature]_spec.md` | architect | source of truth |
 | `Planning/reference/` | architect | shared definitions specs cite (data models, constants) |
-| `Planning/blueprints/[feature]_BP.md` | foreman | single-file blueprint |
-| `Planning/blueprints/[feature]_BP_p-1.md`, `_p-2.md`, … | foreman | part files past 10 slices; **slice numbering is continuous across parts** (p-2 opens at Slice 11) |
-| `docs/decisions/[feature]_YYYY-MM-DD.md` | architect | decision log (append-only) |
-| `docs/architecture.md` | manual | as-built map; written only once modules need one |
-| `output/inspect/Inspect_[feature]_Final_[YYYY-MM-DD]_[HH-MM].md` | inspector | final report; **`HH-MM` uses a hyphen** (filenames forbid `:`); the time suffix stops a re-inspection overwriting the failed one |
-| `output/deviations/Deviations_[feature]_[YYYY-MM-DD]_[HH-MM].md` | builder | deviation rollup; written even when none ("None.") |
-| `output/surveys/Survey_[YYYY-MM-DD]_[HH-MM].md` (or `Survey_[feature]_[YYYY-MM-DD]_[HH-MM].md`) | surveyor | dated drift report |
-| `output/walkthrough/WalkthroughLog_[YYYY-MM-DD]_[HH-MM].md`, `Recommendations_[YYYY-MM-DD]_[HH-MM].md` | walkthrough | |
-| `output/homeowner/HomeownerLog_[YYYY-MM-DD]_[HH-MM].md` | homeowner | run log |
+| `Plumbline/blueprints/[feature]_BP.md` | foreman | single-file blueprint |
+| `Plumbline/blueprints/[feature]_BP_p-1.md`, `_p-2.md`, … | foreman | part files past 10 slices; **slice numbering is continuous across parts** (p-2 opens at Slice 11) |
+| `Plumbline/decisions/[feature]_YYYY-MM-DD.md` | architect | decision log (append-only) |
+| `Plumbline/architecture.md` | manual | as-built map; written only once modules need one |
+| `Plumbline/inspect/Inspect_[feature]_Final_[YYYY-MM-DD]_[HH-MM].md` | inspector | final report; **`HH-MM` uses a hyphen** (filenames forbid `:`); the time suffix stops a re-inspection overwriting the failed one |
+| `Plumbline/deviations/Deviations_[feature]_[YYYY-MM-DD]_[HH-MM].md` | builder | deviation rollup; written even when none ("None.") |
+| `Plumbline/surveys/Survey_[YYYY-MM-DD]_[HH-MM].md` (or `Survey_[feature]_[YYYY-MM-DD]_[HH-MM].md`) | surveyor | dated drift report |
+| `Plumbline/walkthrough/WalkthroughLog_[YYYY-MM-DD]_[HH-MM].md`, `Recommendations_[YYYY-MM-DD]_[HH-MM].md` | walkthrough | |
+| `Plumbline/homeowner/HomeownerLog_[YYYY-MM-DD]_[HH-MM].md` | homeowner | run log |
 | `CLAUDE.md` | scaffold (writes) / architect (fills) | the project contract (§9) |
 
-**Every generated file under `output/` carries `_YYYY-MM-DD_HH-MM`** (hyphens) — so reruns sort by time and never overwrite a prior run. Blueprint **stamps** use `HH:MM` (colon — they are text, not filenames). The append-only decision log stays date-only (`[feature]_YYYY-MM-DD.md`).
+**Every generated report under `Plumbline/` carries `_YYYY-MM-DD_HH-MM`** (hyphens) — so reruns sort by time and never overwrite a prior run. Blueprint **stamps** use `HH:MM` (colon — they are text, not filenames). The append-only decision log stays date-only (`[feature]_YYYY-MM-DD.md`).
 
 ---
 
@@ -160,7 +162,7 @@ Every skill must agree byte-for-byte. `[feature]` is the feature's lowercase slu
 | `CLAUDE.md` | The per-project contract scaffold writes and every skill reads: identity, stack, commands, change rules, folder map, Plumbline version stamp. |
 | `[pending — architect]` | Placeholder scaffold leaves in `CLAUDE.md` for **Stack** and **Commands**. **architect** fills them when it writes the first spec — the one time architect writes to the contract. walkthrough must route an unfilled placeholder to Recommendations, **never fill it**. |
 | `UI evidence tool` | A `CLAUDE.md` **Commands** line — `- UI evidence tool: <tool>` (e.g. `playwright (python)`) — that **architect** adds when the spec calls for a browser UI and **inspector** reads to choose its capture engine. Match the key exactly: inspector greps the literal `UI evidence tool` (no hyphen). |
-| `History` mode | A `CLAUDE.md` field — `git` (**default**) or `none`. `git`: scaffold inits git, every change ends in a commit, history is the git log. `none`: no git; history is the dated artifact trail (`docs/decisions/` + `output/` reports + blueprint stamps) — a full audit trail, no per-file diffs, no manual changelog. scaffold sets it; the Change-rules terminal step and homeowner's closing file-list both branch on it. |
+| `History` mode | A `CLAUDE.md` field — `git` (**default**) or `none`. `git`: scaffold inits git, every change ends in a commit, history is the git log. `none`: no git; history is the dated artifact trail (`Plumbline/` — decisions, reports, and blueprint stamps) — a full audit trail, no per-file diffs, no manual changelog. scaffold sets it; the Change-rules terminal step and homeowner's closing file-list both branch on it. |
 | **Quick Path / Full Path** | The change-rules in `CLAUDE.md`. Quick Path: no files added/removed/renamed (new *test* files excepted), no schema/core-logic change → edit, test, commit. Full Path: everything else → spec, code, test, inspect, decision doc, commit. |
 | **Build mode / Maintain mode** | Build = idea → verified code (scaffold → architect → foreman → builder → inspector). Maintain = keep built code honest (surveyor, inspector, walkthrough). |
 | **Orchestrator** | A skill that sequences others without reimplementing them: **homeowner** (build), **walkthrough** (maintain). |

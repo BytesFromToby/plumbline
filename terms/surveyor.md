@@ -71,22 +71,24 @@ Decision rules more than one skill applies. The **test** is the contract — kee
 
 Every skill must agree byte-for-byte. `[feature]` is the feature's lowercase slug, identical across its spec, blueprint, and output files. Dates are `YYYY-MM-DD`.
 
+**The tree splits in two.** `Planning/` holds **human intent** — the specs and reference the build is judged against. `Plumbline/` holds **everything the workflow generates** — blueprints, decision logs, and every skill's reports. Code lives wherever the stack puts it, outside both.
+
 | Path / pattern | Owner | Notes |
 |---|---|---|
 | `Planning/specs/[feature]_spec.md` | architect | source of truth |
 | `Planning/reference/` | architect | shared definitions specs cite (data models, constants) |
-| `Planning/blueprints/[feature]_BP.md` | foreman | single-file blueprint |
-| `Planning/blueprints/[feature]_BP_p-1.md`, `_p-2.md`, … | foreman | part files past 10 slices; **slice numbering is continuous across parts** (p-2 opens at Slice 11) |
-| `docs/decisions/[feature]_YYYY-MM-DD.md` | architect | decision log (append-only) |
-| `docs/architecture.md` | manual | as-built map; written only once modules need one |
-| `output/inspect/Inspect_[feature]_Final_[YYYY-MM-DD]_[HH-MM].md` | inspector | final report; **`HH-MM` uses a hyphen** (filenames forbid `:`); the time suffix stops a re-inspection overwriting the failed one |
-| `output/deviations/Deviations_[feature]_[YYYY-MM-DD]_[HH-MM].md` | builder | deviation rollup; written even when none ("None.") |
-| `output/surveys/Survey_[YYYY-MM-DD]_[HH-MM].md` (or `Survey_[feature]_[YYYY-MM-DD]_[HH-MM].md`) | surveyor | dated drift report |
-| `output/walkthrough/WalkthroughLog_[YYYY-MM-DD]_[HH-MM].md`, `Recommendations_[YYYY-MM-DD]_[HH-MM].md` | walkthrough | |
-| `output/homeowner/HomeownerLog_[YYYY-MM-DD]_[HH-MM].md` | homeowner | run log |
+| `Plumbline/blueprints/[feature]_BP.md` | foreman | single-file blueprint |
+| `Plumbline/blueprints/[feature]_BP_p-1.md`, `_p-2.md`, … | foreman | part files past 10 slices; **slice numbering is continuous across parts** (p-2 opens at Slice 11) |
+| `Plumbline/decisions/[feature]_YYYY-MM-DD.md` | architect | decision log (append-only) |
+| `Plumbline/architecture.md` | manual | as-built map; written only once modules need one |
+| `Plumbline/inspect/Inspect_[feature]_Final_[YYYY-MM-DD]_[HH-MM].md` | inspector | final report; **`HH-MM` uses a hyphen** (filenames forbid `:`); the time suffix stops a re-inspection overwriting the failed one |
+| `Plumbline/deviations/Deviations_[feature]_[YYYY-MM-DD]_[HH-MM].md` | builder | deviation rollup; written even when none ("None.") |
+| `Plumbline/surveys/Survey_[YYYY-MM-DD]_[HH-MM].md` (or `Survey_[feature]_[YYYY-MM-DD]_[HH-MM].md`) | surveyor | dated drift report |
+| `Plumbline/walkthrough/WalkthroughLog_[YYYY-MM-DD]_[HH-MM].md`, `Recommendations_[YYYY-MM-DD]_[HH-MM].md` | walkthrough | |
+| `Plumbline/homeowner/HomeownerLog_[YYYY-MM-DD]_[HH-MM].md` | homeowner | run log |
 | `CLAUDE.md` | scaffold (writes) / architect (fills) | the project contract (§9) |
 
-**Every generated file under `output/` carries `_YYYY-MM-DD_HH-MM`** (hyphens) — so reruns sort by time and never overwrite a prior run. Blueprint **stamps** use `HH:MM` (colon — they are text, not filenames). The append-only decision log stays date-only (`[feature]_YYYY-MM-DD.md`).
+**Every generated report under `Plumbline/` carries `_YYYY-MM-DD_HH-MM`** (hyphens) — so reruns sort by time and never overwrite a prior run. Blueprint **stamps** use `HH:MM` (colon — they are text, not filenames). The append-only decision log stays date-only (`[feature]_YYYY-MM-DD.md`).
 
 ---
 
@@ -97,4 +99,4 @@ Every skill must agree byte-for-byte. `[feature]` is the feature's lowercase slu
 |---|---|---|
 | **Feature spec** | `**Done when:**` items | yes — checked for drift and test backing |
 | **Reference doc** | lives in `Planning/reference/` | no — definitional; check only that its terms still match code/specs |
-| **Architecture doc** | `docs/architecture.md` | no — check only that the modules it names still exist |
+| **Architecture doc** | `Plumbline/architecture.md` | no — check only that the modules it names still exist |

@@ -53,7 +53,7 @@ Every Done-when line carries **exactly one** tag — `[automated]` or `[human-re
 
 Producer: **foreman** · Consumers: **builder, inspector**
 
-Blueprint: `Planning/blueprints/[feature]_BP.md`, or part files past 10 slices (§8).
+Blueprint: `Plumbline/blueprints/[feature]_BP.md`, or part files past 10 slices (§8).
 
 | Token | Meaning |
 |---|---|
@@ -77,7 +77,7 @@ Blueprint: `Planning/blueprints/[feature]_BP.md`, or part files past 10 slices (
 | `**Fix:** [item] — [what changed] (YYYY-MM-DD)` | builder (fix mode) → inspector | A repair logged under the affected slice. |
 | `**STALE — spec changed YYYY-MM-DD**` | foreman → builder, inspector | Marks a slice whose spec basis changed on regeneration; the slice is rewritten, its prior stamp kept. |
 | `✅ Inspector: PASS — YYYY-MM-DD HH:MM` | inspector → builder, foreman, inspector | Dated pass stamp on a slice or the final checkpoint. **Colon in the time** (`HH:MM`). |
-| `❌ Inspector: FAIL — YYYY-MM-DD HH:MM — off spec: [criterion] — expected [x], observed [y]` | inspector → builder (fix mode) | Dated fail stamp; names the violated criterion + expected-vs-observed. A final fail appends `— see output/inspect/Inspect_[feature]_Final_[date]_[HH-MM].md`. |
+| `❌ Inspector: FAIL — YYYY-MM-DD HH:MM — off spec: [criterion] — expected [x], observed [y]` | inspector → builder (fix mode) | Dated fail stamp; names the violated criterion + expected-vs-observed. A final fail appends `— see Plumbline/inspect/Inspect_[feature]_Final_[date]_[HH-MM].md`. |
 | `- [x] **Fully inspected**` | inspector only | Ticked only when every `[inspect]` slice **and** the final sign-off passed. Never ticked by hand or while any item failed. |
 
 These are the **only** writes inspector and builder make to the blueprint's structure; they record results, never change a step, Done-When, or scope.
@@ -151,19 +151,21 @@ Decision rules more than one skill applies. The **test** is the contract — kee
 
 Every skill must agree byte-for-byte. `[feature]` is the feature's lowercase slug, identical across its spec, blueprint, and output files. Dates are `YYYY-MM-DD`.
 
+**The tree splits in two.** `Planning/` holds **human intent** — the specs and reference the build is judged against. `Plumbline/` holds **everything the workflow generates** — blueprints, decision logs, and every skill's reports. Code lives wherever the stack puts it, outside both.
+
 | Path / pattern | Owner | Notes |
 |---|---|---|
 | `Planning/specs/[feature]_spec.md` | architect | source of truth |
 | `Planning/reference/` | architect | shared definitions specs cite (data models, constants) |
-| `Planning/blueprints/[feature]_BP.md` | foreman | single-file blueprint |
-| `Planning/blueprints/[feature]_BP_p-1.md`, `_p-2.md`, … | foreman | part files past 10 slices; **slice numbering is continuous across parts** (p-2 opens at Slice 11) |
-| `docs/decisions/[feature]_YYYY-MM-DD.md` | architect | decision log (append-only) |
-| `docs/architecture.md` | manual | as-built map; written only once modules need one |
-| `output/inspect/Inspect_[feature]_Final_[YYYY-MM-DD]_[HH-MM].md` | inspector | final report; **`HH-MM` uses a hyphen** (filenames forbid `:`); the time suffix stops a re-inspection overwriting the failed one |
-| `output/deviations/Deviations_[feature]_[YYYY-MM-DD]_[HH-MM].md` | builder | deviation rollup; written even when none ("None.") |
-| `output/surveys/Survey_[YYYY-MM-DD]_[HH-MM].md` (or `Survey_[feature]_[YYYY-MM-DD]_[HH-MM].md`) | surveyor | dated drift report |
-| `output/walkthrough/WalkthroughLog_[YYYY-MM-DD]_[HH-MM].md`, `Recommendations_[YYYY-MM-DD]_[HH-MM].md` | walkthrough | |
-| `output/homeowner/HomeownerLog_[YYYY-MM-DD]_[HH-MM].md` | homeowner | run log |
+| `Plumbline/blueprints/[feature]_BP.md` | foreman | single-file blueprint |
+| `Plumbline/blueprints/[feature]_BP_p-1.md`, `_p-2.md`, … | foreman | part files past 10 slices; **slice numbering is continuous across parts** (p-2 opens at Slice 11) |
+| `Plumbline/decisions/[feature]_YYYY-MM-DD.md` | architect | decision log (append-only) |
+| `Plumbline/architecture.md` | manual | as-built map; written only once modules need one |
+| `Plumbline/inspect/Inspect_[feature]_Final_[YYYY-MM-DD]_[HH-MM].md` | inspector | final report; **`HH-MM` uses a hyphen** (filenames forbid `:`); the time suffix stops a re-inspection overwriting the failed one |
+| `Plumbline/deviations/Deviations_[feature]_[YYYY-MM-DD]_[HH-MM].md` | builder | deviation rollup; written even when none ("None.") |
+| `Plumbline/surveys/Survey_[YYYY-MM-DD]_[HH-MM].md` (or `Survey_[feature]_[YYYY-MM-DD]_[HH-MM].md`) | surveyor | dated drift report |
+| `Plumbline/walkthrough/WalkthroughLog_[YYYY-MM-DD]_[HH-MM].md`, `Recommendations_[YYYY-MM-DD]_[HH-MM].md` | walkthrough | |
+| `Plumbline/homeowner/HomeownerLog_[YYYY-MM-DD]_[HH-MM].md` | homeowner | run log |
 | `CLAUDE.md` | scaffold (writes) / architect (fills) | the project contract (§9) |
 
-**Every generated file under `output/` carries `_YYYY-MM-DD_HH-MM`** (hyphens) — so reruns sort by time and never overwrite a prior run. Blueprint **stamps** use `HH:MM` (colon — they are text, not filenames). The append-only decision log stays date-only (`[feature]_YYYY-MM-DD.md`).
+**Every generated report under `Plumbline/` carries `_YYYY-MM-DD_HH-MM`** (hyphens) — so reruns sort by time and never overwrite a prior run. Blueprint **stamps** use `HH:MM` (colon — they are text, not filenames). The append-only decision log stays date-only (`[feature]_YYYY-MM-DD.md`).
