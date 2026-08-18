@@ -144,6 +144,7 @@ When all steps in the slice are checked off:
 
 1. Re-read the slice **Scope** line. Confirm the codebase actually does what it says.
 2. Run the test command one final time. All tests must pass.
+3. **Clean the tree — enforce "leave no scratch behind" (Code rules).** List the files now present that weren't before the slice. Delete every one that is *not* code, a committed test, or a fixture a blueprint step explicitly called for — hand-run sample inputs, output dumps, throwaway scripts. If a committed test only passed because it read a loose file left in the tree, that test is the defect: fix it to build its own fixture in a temp dir (`tmp_path`), then delete the file — never keep the file to satisfy the test. State "tree clean — only intended files" in the handoff, or name what you removed. Do not hand off with scratch in the tree.
 
 ---
 
