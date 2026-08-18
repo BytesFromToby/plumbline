@@ -1,5 +1,5 @@
 <!-- GENERATED from TERMS.md by `python tools/audit.py --write-terms` -- do not edit.
-     This is surveyor's slice of the Plumbline contract: the preamble plus every
+     This is adopt's slice of the Plumbline contract: the preamble plus every
      section whose audience line names it. TERMS.md is the source of truth. -->
 
 # Plumbline TERMS — the cross-skill contract
@@ -24,45 +24,6 @@ keeps them identical.
   `python tools/audit.py --write-terms`; the audit fails while they are stale, so a slice
   can never silently drift from this file. A skill that cannot load its slice must stop
   and report, never guess the contract.
-
----
-
-## §1 — Spec tokens
-<!-- audience: architect, foreman, builder, inspector, surveyor, homeowner -->
-
-Producer: **architect** · Consumers: **foreman, builder, inspector, surveyor, homeowner**
-
-The spec (`Planning/specs/[feature]_spec.md`) is the source of truth. These strings are read literally.
-
-| Token | Meaning |
-|---|---|
-| `**Done when:**` | Heading above a feature's acceptance criteria. **Lowercase `when`.** Distinct from the blueprint step's `**Done When:**` (§2). |
-| `[automated]` | Tag on a Done-when item: a committed test judges it. Means *a test exists*, not an improvised check. |
-| `[human-required]` | Tag on a Done-when item: only a person can judge it. inspector captures evidence but never grades it. |
-| `## Scope` | Section with a `Does:` line and at least one hard `Does NOT:` line. |
-| `## Feature: [Name]` | One block per feature; every block must carry a `**Done when:**` section. |
-| `## Assumptions` | Low-surprise, cheap-to-change defaults made where a brief was silent. **Non-blocking.** Omitted when none. |
-| `## Open Questions` | A genuine fork that could not be safely defaulted. **Blocking** (§6). Omitted when none. |
-
-Every Done-when line carries **exactly one** tag — `[automated]` or `[human-required]`. No untagged criteria.
-
----
-
-## §6 — Shared decision tests
-<!-- audience: architect, foreman, builder, inspector, surveyor, homeowner, walkthrough -->
-
-Decision rules more than one skill applies. The **test** is the contract — keep it identical everywhere.
-
-- **Assumption vs Open Question** — architect sorts; homeowner re-checks.
-  Test: *if this default turns out wrong, is it a cheap edit or a partial rebuild / architecture fork?*
-  Cheap & low-surprise → **Assumption** (`## Assumptions`, non-blocking). Rebuild or fork → **Open Question** (`## Open Questions`, blocks). **When unsure, treat it as an Open Question.**
-
-- **Deviation vs Stuck** — builder applies; inspector/walkthrough read the trail.
-  Test: did the change alter only *how* a step was written (name, location, tactic), or *what* it does (behavior, interface, signature, approach)?
-  How → **Deviation** (log it, keep going). What → **Stuck** (stop and report). The step's Done-When is the arbiter: if it still passes the same way, it was a deviation.
-
-- **Test fidelity** — inspector judges; surveyor's static counterpart; foreman plans for it.
-  Test: *would this test fail if the criterion were violated?* No → the criterion is **unproven**, however green the run — a finding routed to builder, never a pass. Recorded `fidelity: ok` or `fidelity: weak — [reason]`.
 
 ---
 
@@ -92,11 +53,16 @@ Every skill must agree byte-for-byte. `[feature]` is the feature's lowercase slu
 
 ---
 
-## §9 — Document classes (surveyor)
-<!-- audience: surveyor -->
+## §10 — Contract & lifecycle terms
+<!-- audience: scaffold, adopt, architect, inspector, homeowner, walkthrough -->
 
-| Class | Identified by | Has `**Done when:**`? |
-|---|---|---|
-| **Feature spec** | `**Done when:**` items | yes — checked for drift and test backing |
-| **Reference doc** | lives in `Planning/reference/` | no — definitional; check only that its terms still match code/specs |
-| **Architecture doc** | `Plumbline/architecture.md` | no — check only that the modules it names still exist |
+| Term | Definition |
+|---|---|
+| `CLAUDE.md` | The per-project contract scaffold writes and every skill reads: identity, stack, commands, change rules, folder map, Plumbline version stamp. |
+| `[pending — architect]` | Placeholder scaffold leaves in `CLAUDE.md` for **Stack** and **Commands**. **architect** fills them when it writes the first spec — the one time architect writes to the contract. walkthrough must route an unfilled placeholder to Recommendations, **never fill it**. |
+| `UI evidence tool` | A `CLAUDE.md` **Commands** line — `- UI evidence tool: <tool>` (e.g. `playwright (python)`) — that **architect** adds when the spec calls for a browser UI and **inspector** reads to choose its capture engine. Match the key exactly: inspector greps the literal `UI evidence tool` (no hyphen). |
+| `History` mode | A `CLAUDE.md` field — `git` (**default**) or `none`. `git`: scaffold inits git, every change ends in a commit, history is the git log. `none`: no git; history is the dated artifact trail (`Plumbline/` — decisions, reports, and blueprint stamps) — a full audit trail, no per-file diffs, no manual changelog. scaffold sets it; the Change-rules terminal step and homeowner's closing file-list both branch on it. |
+| **Quick Path / Full Path** | The change-rules in `CLAUDE.md`. Quick Path: no files added/removed/renamed (new *test* files excepted), no schema/core-logic change → edit, test, commit. Full Path: everything else → spec, code, test, inspect, decision doc, commit. |
+| **Build mode / Maintain mode** | Build = idea → verified code (scaffold → architect → foreman → builder → inspector). Maintain = keep built code honest (surveyor, inspector, walkthrough). |
+| **adopt (brownfield bootstrap)** | The existing-project counterpart to **scaffold**. Lays the single `Plumbline/` machinery folder + `Planning/` skeleton into a repo that already has code (non-destructively), **detects and fills** Stack/Commands from the real project rather than leaving `[pending]`, sets History from the repo (`git` if already a git repo), and asks where the project's existing spec docs live. It does not write specs itself: it records that source location and hands to **architect** in *adapt mode*, which ingests those docs + the code into Plumbline specs under `Planning/specs/` (the originals are left untouched as reference). Runs once, at first onboarding. |
+| **Orchestrator** | A skill that sequences others without reimplementing them: **homeowner** (build), **walkthrough** (maintain). |

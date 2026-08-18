@@ -1,6 +1,6 @@
 ---
 name: architect
-description: Defines a feature or project and writes the spec — by interviewing the user, or in autonomous mode by expanding a written brief and sorting every gap into a low-surprise assumption (non-blocking) or a genuine fork (an Open Question that halts). Run at the start of any new feature or project, or to update an existing spec. Also flags (does not perform) a restructure when the spec or a single feature grows too large.
+description: Defines a feature or project and writes the spec — by interviewing the user, or in autonomous mode by expanding a written brief and sorting every gap into a low-surprise assumption (non-blocking) or a genuine fork (an Open Question that halts). Also runs in adapt mode to ingest an existing project's docs and code into a Plumbline spec (brownfield onboarding via adopt). Run at the start of any new feature or project, or to update an existing spec. Also flags (does not perform) a restructure when the spec or a single feature grows too large.
 version: 1.0
 ---
 
@@ -30,6 +30,7 @@ First establish whether a human is in the loop — it changes how you gather req
 3. **Determine your mode:**
    - **Autonomous mode** — an orchestrator invoked you with a written brief and no interactive human. You **cannot ask questions**; you expand the brief and route every gap to Open Questions (Step 2, brief-expansion path).
    - **Interview mode** — a human is present (the default when run directly). You elicit the spec by asking.
+   - **Adapt mode** — you were invoked (by `adopt`, an orchestrator, or a human) to onboard an **existing** project. Your requirements source is the project's own **spec docs** (at the source location `adopt` recorded) plus the **code** — not an interview, not a fresh brief. You ingest what already exists into Plumbline specs (Step 2, adapt-ingest path). Like autonomous mode, if you were spawned without a human you cannot ask questions and route genuine gaps to Open Questions.
 
 Then classify the work — new project / new feature / spec update:
 - **Interview mode:** ask the user one question: **"Is this a new project, a new feature on an existing codebase, or an update to an existing spec?"**
@@ -48,6 +49,7 @@ Whichever mode, handle these the same way once classified:
 **Mode fork.** How you gather depends on Step 1's mode:
 - **Interview mode** → 2a–2d below as written: ask, one question at a time.
 - **Autonomous mode** → the **brief-expansion path** (2e), then apply 2c and 2d to what you extracted.
+- **Adapt mode** → the **adapt-ingest path** (2f): read the existing docs + code, then apply 2c and 2d to what's actually there.
 
 ### 2a — Size it first
 
@@ -107,6 +109,20 @@ You have a written brief and no one to ask. Your job is to expand it into a comp
 5. Then apply **2d** — make every Done-when observable — to the criteria you extracted or assumed, exactly as interview mode does.
 
 The discipline: a thin brief produces a complete spec with a clear `## Assumptions` list (defaults to confirm) and, only where a real fork remained, an `## Open Questions` list (which halts). Neither hides a guess; both make the brief's thinness visible. Step 6 reports `READY · ASSUMPTIONS: N` when only assumptions remain (the build proceeds), or `OPEN_QUESTIONS: N` when a fork must be answered first (halt).
+
+### 2f — Adapt-ingest (adapt mode)
+
+You are documenting a project that **already exists**. Your requirements source is the project's own **spec docs** (at the source location `adopt` recorded) plus the **code** — not an interview, not a written brief. The discipline flips: you are *capturing existing truth*, not *designing new intent*. The Done-when items describe what the system **already does** and should keep doing — not behavior you'd like it to have.
+
+1. **Read the source docs first, then the code.** Read every doc at the recorded location as the statement of *intent*; then read the code it describes for the *actual behavior*. Use the names already in the code — never invent synonyms. The originals are reference only — you never edit them. (If `adopt` recorded "none — derive from code," the code alone is your source; say so, and lean harder on step 2's code-derived path.)
+2. **Cover the same areas as 2c** — scope, each feature's input/output/rules, edges/errors, constraints — but source each from what exists:
+   - **A doc states it** → capture it as the criterion.
+   - **The docs are silent but the code plainly does it** → derive the Done-when from the observed behavior, and record under `## Assumptions` that it was **reverse-engineered from code, not stated intent** ("Confirm this is intended, not incidental."). This is the adapt-mode workhorse — most criteria come from reading behavior.
+   - **Docs and code disagree, or the intent is genuinely ambiguous** (code does X, a doc says Y; you can't tell which is the requirement) → `## Open Questions`. Never silently pick one — a wrong guess locks the wrong behavior into the spec.
+3. **Apply 2d** — every Done-when must be observable. Existing behavior is easy to make observable: name the command / endpoint / output and its *current* result, something you could confirm by running the code as it stands.
+4. **Do not invent scope.** A doc describing a feature the code doesn't implement (aspirational docs) is not a Done-when — record it as an Open Question, or leave it out with an Assumption note. adopt/adapt captures what's **built**, not what was wished for.
+
+The output is a spec whose Done-when items pin the *current* behavior — so `foreman` can plan characterization tests and `builder` can write them, retrofitting a test-backed spec onto code that had none. Every criterion sourced from code rather than a stated requirement sits in `## Assumptions` for a human to confirm.
 
 ---
 
@@ -228,7 +244,7 @@ This check is the only place architect touches the grow-then-split lifecycle. In
 
 ## Step 6 — Report and hand off
 
-Architect produces artifacts and reports a status. **It never invokes the next stage itself** — the caller sequences. In interview mode the caller is the user; in autonomous mode it's the orchestrator. Same artifacts, different reader.
+Architect produces artifacts and reports a status. **It never invokes the next stage itself** — the caller sequences. In interview mode the caller is the user; in autonomous mode it's the orchestrator. Same artifacts, different reader. **Adapt mode** hands off like autonomous mode when it was spawned without a human (emit a routable status, then stop), or like interview mode when a human is driving the adoption.
 
 **Interview mode** — tell the user:
 1. Review the spec at `Planning/specs/[feature]_spec.md`

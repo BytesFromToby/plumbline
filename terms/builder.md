@@ -147,7 +147,7 @@ Decision rules more than one skill applies. The **test** is the contract — kee
 ---
 
 ## §8 — Paths & naming
-<!-- audience: scaffold, architect, foreman, builder, inspector, surveyor, homeowner, walkthrough -->
+<!-- audience: scaffold, adopt, architect, foreman, builder, inspector, surveyor, homeowner, walkthrough -->
 
 Every skill must agree byte-for-byte. `[feature]` is the feature's lowercase slug, identical across its spec, blueprint, and output files. Dates are `YYYY-MM-DD`.
 
@@ -166,6 +166,6 @@ Every skill must agree byte-for-byte. `[feature]` is the feature's lowercase slu
 | `Plumbline/surveys/Survey_[YYYY-MM-DD]_[HH-MM].md` (or `Survey_[feature]_[YYYY-MM-DD]_[HH-MM].md`) | surveyor | dated drift report |
 | `Plumbline/walkthrough/WalkthroughLog_[YYYY-MM-DD]_[HH-MM].md`, `Recommendations_[YYYY-MM-DD]_[HH-MM].md` | walkthrough | |
 | `Plumbline/homeowner/HomeownerLog_[YYYY-MM-DD]_[HH-MM].md` | homeowner | run log |
-| `CLAUDE.md` | scaffold (writes) / architect (fills) | the project contract (§9) |
+| `CLAUDE.md` | scaffold / adopt (write) / architect (fills) | the project contract (§9) |
 
 **Every generated report under `Plumbline/` carries `_YYYY-MM-DD_HH-MM`** (hyphens) — so reruns sort by time and never overwrite a prior run. Blueprint **stamps** use `HH:MM` (colon — they are text, not filenames). The append-only decision log stays date-only (`[feature]_YYYY-MM-DD.md`).

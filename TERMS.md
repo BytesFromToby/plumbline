@@ -161,7 +161,7 @@ boundaries they sequence across — only they load it at runtime.
 ---
 
 ## §8 — Paths & naming
-<!-- audience: scaffold, architect, foreman, builder, inspector, surveyor, homeowner, walkthrough -->
+<!-- audience: scaffold, adopt, architect, foreman, builder, inspector, surveyor, homeowner, walkthrough -->
 
 Every skill must agree byte-for-byte. `[feature]` is the feature's lowercase slug, identical across its spec, blueprint, and output files. Dates are `YYYY-MM-DD`.
 
@@ -180,7 +180,7 @@ Every skill must agree byte-for-byte. `[feature]` is the feature's lowercase slu
 | `Plumbline/surveys/Survey_[YYYY-MM-DD]_[HH-MM].md` (or `Survey_[feature]_[YYYY-MM-DD]_[HH-MM].md`) | surveyor | dated drift report |
 | `Plumbline/walkthrough/WalkthroughLog_[YYYY-MM-DD]_[HH-MM].md`, `Recommendations_[YYYY-MM-DD]_[HH-MM].md` | walkthrough | |
 | `Plumbline/homeowner/HomeownerLog_[YYYY-MM-DD]_[HH-MM].md` | homeowner | run log |
-| `CLAUDE.md` | scaffold (writes) / architect (fills) | the project contract (§9) |
+| `CLAUDE.md` | scaffold / adopt (write) / architect (fills) | the project contract (§9) |
 
 **Every generated report under `Plumbline/` carries `_YYYY-MM-DD_HH-MM`** (hyphens) — so reruns sort by time and never overwrite a prior run. Blueprint **stamps** use `HH:MM` (colon — they are text, not filenames). The append-only decision log stays date-only (`[feature]_YYYY-MM-DD.md`).
 
@@ -198,7 +198,7 @@ Every skill must agree byte-for-byte. `[feature]` is the feature's lowercase slu
 ---
 
 ## §10 — Contract & lifecycle terms
-<!-- audience: scaffold, architect, inspector, homeowner, walkthrough -->
+<!-- audience: scaffold, adopt, architect, inspector, homeowner, walkthrough -->
 
 | Term | Definition |
 |---|---|
@@ -208,4 +208,5 @@ Every skill must agree byte-for-byte. `[feature]` is the feature's lowercase slu
 | `History` mode | A `CLAUDE.md` field — `git` (**default**) or `none`. `git`: scaffold inits git, every change ends in a commit, history is the git log. `none`: no git; history is the dated artifact trail (`Plumbline/` — decisions, reports, and blueprint stamps) — a full audit trail, no per-file diffs, no manual changelog. scaffold sets it; the Change-rules terminal step and homeowner's closing file-list both branch on it. |
 | **Quick Path / Full Path** | The change-rules in `CLAUDE.md`. Quick Path: no files added/removed/renamed (new *test* files excepted), no schema/core-logic change → edit, test, commit. Full Path: everything else → spec, code, test, inspect, decision doc, commit. |
 | **Build mode / Maintain mode** | Build = idea → verified code (scaffold → architect → foreman → builder → inspector). Maintain = keep built code honest (surveyor, inspector, walkthrough). |
+| **adopt (brownfield bootstrap)** | The existing-project counterpart to **scaffold**. Lays the single `Plumbline/` machinery folder + `Planning/` skeleton into a repo that already has code (non-destructively), **detects and fills** Stack/Commands from the real project rather than leaving `[pending]`, sets History from the repo (`git` if already a git repo), and asks where the project's existing spec docs live. It does not write specs itself: it records that source location and hands to **architect** in *adapt mode*, which ingests those docs + the code into Plumbline specs under `Planning/specs/` (the originals are left untouched as reference). Runs once, at first onboarding. |
 | **Orchestrator** | A skill that sequences others without reimplementing them: **homeowner** (build), **walkthrough** (maintain). |
