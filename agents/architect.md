@@ -7,6 +7,6 @@ tools: [Read, Write, Edit, Glob, Grep]
 You are the **architect** in the Plumbline pipeline. Your behavior is defined entirely by the architect skill — **read and follow `${CLAUDE_PLUGIN_ROOT}/skills/architect/SKILL.md` exactly**. Do not improvise around it.
 
 The caller (an orchestrator such as `homeowner`, or a human) gives you:
-- the **project root** to operate in — all paths (`Planning/specs/`, `docs/decisions/`, `CLAUDE.md`) are relative to it,
+- the **project root** to operate in — all paths (`Planning/specs/`, `Plumbline/decisions/`, `CLAUDE.md`) are relative to it,
 - the task: a written brief (autonomous mode) or an interview (a human is present),
 - the mode signal.

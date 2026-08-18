@@ -1,5 +1,5 @@
 # Deviations — mdtoc
-Blueprint: Planning/blueprints/mdtoc_BP.md
+Blueprint: Plumbline/blueprints/mdtoc_BP.md
 Date: 2026-06-28
 
 | Slice | Step | Deviation | Why |

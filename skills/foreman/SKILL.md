@@ -15,7 +15,7 @@ Before anything else, read your slice of the Plumbline contract at **`${CLAUDE_P
 - To regenerate the blueprint after a spec update
 
 ## What is a blueprint?
-The blueprint is the builder's step-by-step execution plan. It breaks the spec into slices and steps that can be followed without re-deriving the whole spec each time. The blueprint is written to `Planning/blueprints/[feature]_BP.md` in a specific format that the builder understands.
+The blueprint is the builder's step-by-step execution plan. It breaks the spec into slices and steps that can be followed without re-deriving the whole spec each time. The blueprint is written to `Plumbline/blueprints/[feature]_BP.md` in a specific format that the builder understands.
 
 - **Step:** the smallest unit — one small change to the codebase. Each step carries a `Build`, a `Test`, a `Done When`, and a `Stuck If`.
 - **Slice:** a group of steps (max 10) that ends in an independently testable state. A slice opens with a one-sentence `Scope` (what the codebase can do once the slice is done) and closes at a **builder checkpoint** — tests green → continue — or, when flagged `[inspect]`, a hard inspector stop.
@@ -71,7 +71,7 @@ Before writing anything, plan the slices mentally.
 
 ## Step 3 — Write the blueprint
 
-Write to `Planning/blueprints/[feature]_BP.md` (or, when the build needs more than 10 slices, to `[feature]_BP_p-1.md`, `[feature]_BP_p-2.md`, … — see "Splitting across part files"). Create `Planning/blueprints/` if it doesn't exist. Slice numbering runs continuously across parts — p-2 opens at Slice 11, not Slice 1.
+Write to `Plumbline/blueprints/[feature]_BP.md` (or, when the build needs more than 10 slices, to `[feature]_BP_p-1.md`, `[feature]_BP_p-2.md`, … — see "Splitting across part files"). Create `Plumbline/blueprints/` if it doesn't exist. Slice numbering runs continuously across parts — p-2 opens at Slice 11, not Slice 1.
 
 Use this format exactly:
 
@@ -189,7 +189,7 @@ If anything is missing, fix it before reporting done.
 Emit one report. A human reads the summary and acts on it; an orchestrator routes on the status line. Same report either way — foreman's work doesn't change with the reader, so there's no separate mode.
 
 **Summary — where things are and what's in the plan:**
-- **Blueprint:** `Planning/blueprints/[feature]_BP.md` — or, if split, every part: `[feature]_BP_p-1.md`, `[feature]_BP_p-2.md`, …
+- **Blueprint:** `Plumbline/blueprints/[feature]_BP.md` — or, if split, every part: `[feature]_BP_p-1.md`, `[feature]_BP_p-2.md`, …
 - **Slices:** total count, and which are `[inspect]`-flagged (schema / auth / destructive / cross-module seam) — noting any `(floor)` flag added because no slice tripped the risk criteria.
 - **Test coverage:** every `[automated]` Done-when item has a committed test planned (from Step 4) — or list the gaps.
 

@@ -67,14 +67,14 @@ them.
 **Stamp the blueprint's final checkpoint first** (in the last part file):
 - Pass: `✅ Inspector: PASS — YYYY-MM-DD HH:MM`
 - Fail: `❌ Inspector: FAIL — YYYY-MM-DD HH:MM — off spec: [criterion] — expected [x], observed [y]
-  — see output/inspect/Inspect_[feature]_Final_[date]_[HH-MM].md` (for several items, summarize:
+  — see Plumbline/inspect/Inspect_[feature]_Final_[date]_[HH-MM].md` (for several items, summarize:
   `[N] items off spec: [a]; [b]; …`)
 
 **On a clean pass only — tick `Fully inspected`:** change `- [ ] **Fully inspected**` to `- [x]`.
 That tick guarantees every `[inspect]` slice *and* the final sign-off passed; **never** tick it
 while any flagged slice is unstamped or any item failed.
 
-**Always write the report** to `output/inspect/Inspect_[feature]_Final_[YYYY-MM-DD]_[HH-MM].md`
+**Always write the report** to `Plumbline/inspect/Inspect_[feature]_Final_[YYYY-MM-DD]_[HH-MM].md`
 (create the folder if needed — the `HH-MM` keeps a post-fix re-inspection from overwriting the
 failed one, so the audit shows both). Name evidence files
 `[spec|blueprint]_[feature]_final_[YYYY-MM-DD]_[HH-MM].png|txt` for traceability.
@@ -82,7 +82,7 @@ failed one, so the audit shows both). Name evidence files
 ```
 # Inspect Report — [Feature] · Final
 Spec: Planning/specs/[feature]_spec.md
-Blueprint: Planning/blueprints/[feature]_BP.md   (or the _p-N part set)
+Blueprint: Plumbline/blueprints/[feature]_BP.md   (or the _p-N part set)
 Date: YYYY-MM-DD
 Run/demo command: `...`
 
@@ -91,7 +91,7 @@ Summary: [X] passed · [Y] failed · [Z] need human sign-off
 ## Results
 | Criterion | Status | Fidelity | Evidence |
 |-----------|--------|----------|----------|
-| [item text] | PASS / FAIL / needs-human | ok / weak — [reason] / n/a | command + key output (or path under output/inspect/) |
+| [item text] | PASS / FAIL / needs-human | ok / weak — [reason] / n/a | command + key output (or path under Plumbline/inspect/) |
 
 ## Deviations noted
 | Step | Deviation | Impact |

@@ -34,7 +34,7 @@ Before anything else, read your slice of the Plumbline contract at **`${CLAUDE_P
      - `flagged` — stop only at `[inspect]`-flagged slices (schema / auth/security / destructive operation / cross-module seam). **Default.**
      - `none` — no mid-build stops; flow straight through. The final inspection still runs.
    The final sign-off is independent of the level — it always happens (see Step 4).
-2. Read the blueprint. A blueprint may be **one file** (`Planning/blueprints/[feature]_BP.md`) or **split into part files** (`[feature]_BP_p-1.md`, `[feature]_BP_p-2.md`, …) when foreman needed more than 10 slices. Read the **part file that holds your assigned slice** in full — Slice 1 lives in `_p-1` (or the single file). Do **not** open later parts: that's reading ahead, and foreman already wrote any cross-part forward constraint into the earlier step that needs it. When a slice is the last in its part, its checkpoint names the next part file to open and the slice to resume at.
+2. Read the blueprint. A blueprint may be **one file** (`Plumbline/blueprints/[feature]_BP.md`) or **split into part files** (`[feature]_BP_p-1.md`, `[feature]_BP_p-2.md`, …) when foreman needed more than 10 slices. Read the **part file that holds your assigned slice** in full — Slice 1 lives in `_p-1` (or the single file). Do **not** open later parts: that's reading ahead, and foreman already wrote any cross-part forward constraint into the earlier step that needs it. When a slice is the last in its part, its checkpoint names the next part file to open and the slice to resume at.
 3. Read the spec named in the blueprint header (`Planning/specs/[feature]_spec.md`) — once, for intent. You build from the blueprint; the spec is your check that the blueprint still serves what the feature is meant to do, and your reference for a detail the blueprint left thin. Do not re-plan from it. (Seeing the whole feature's intent is fine — it stops you making a slice-1 choice that slice 3 has to tear up — but only *act* on what the current slice covers.)
 4. Check for `CLAUDE.md` — read the test command and run/demo command
 5. If this project has existing code and tests, **run the test command now**. If tests are red, stop and report — do not build on a broken baseline. When **resuming** a feature already in progress (a later slice or part), this same run is your guard that the prior slices still hold — a red baseline here means a regression crept in since the last session; stop and report rather than building on it.
@@ -94,7 +94,7 @@ The Done When is the arbiter: if it still passes the same way, you deviated; if 
 - Note a deviation inline under the step's checkbox in the blueprint: `**Deviation:** [what changed and why]` — recorded where it happened.
 - Keep going — deviations are not failures, they are record-keeping.
 - Do not silently absorb a deviation. If you don't note it, the inspector and the blueprint will disagree with the code and no one will know why.
-- At the final slice, roll every deviation up into a deviation file in `output/` (see Step 4) — one place to review them at the end, independent of whether inspection runs.
+- At the final slice, roll every deviation up into a deviation file in `Plumbline/deviations/` (see Step 4) — one place to review them at the end, independent of whether inspection runs.
 
 ---
 
@@ -116,7 +116,7 @@ freestyle patching. Input depends on which inspection failed:
 - **Mid-slice fail** — there is no report file. Your findings are the inspector's **`❌ FAIL` stamp on
   the slice** in the blueprint (the off-spec note: criterion + expected/observed). Re-run the slice's
   tests to see the specifics.
-- **Final fail** — the findings are the final report (`output/inspect/Inspect_[feature]_Final_*.md`).
+- **Final fail** — the findings are the final report (`Plumbline/inspect/Inspect_[feature]_Final_*.md`).
 
 **Fix mode's read-set is the findings, the affected slice, and `CLAUDE.md` — skip the full
 Step 1 orientation.** Do not re-read the whole blueprint or the spec cover to cover: the failure
@@ -154,11 +154,11 @@ Report slice completion:
 - Files written or modified
 - Any deviations logged
 
-**On the final slice only — write the deviation file first.** Scan every `**Deviation:**` note across **all slices in every part file** of the blueprint (`_p-1`, `_p-2`, … — not just the part you finished in) and consolidate them into `output/deviations/Deviations_[feature]_[YYYY-MM-DD]_[HH-MM].md` (create the `output/deviations/` folder if it doesn't exist). The name and header point back to the blueprint they came from. Write it even if there were none (record "None." explicitly, so the absence is verified, not forgotten).
+**On the final slice only — write the deviation file first.** Scan every `**Deviation:**` note across **all slices in every part file** of the blueprint (`_p-1`, `_p-2`, … — not just the part you finished in) and consolidate them into `Plumbline/deviations/Deviations_[feature]_[YYYY-MM-DD]_[HH-MM].md` (create the `Plumbline/deviations/` folder if it doesn't exist). The name and header point back to the blueprint they came from. Write it even if there were none (record "None." explicitly, so the absence is verified, not forgotten).
 
 ```
 # Deviations — [Feature]
-Blueprint: Planning/blueprints/[feature]_BP.md   (or the _p-N part set)
+Blueprint: Plumbline/blueprints/[feature]_BP.md   (or the _p-N part set)
 Date: YYYY-MM-DD
 
 | Slice | Step | Deviation | Why |
@@ -174,7 +174,7 @@ Then report, keyed to the inspection level from Step 1 and whether the slice is 
 **Mid-slice — no inspection due** (level `none`, or level `flagged` and this slice is unflagged):
 "Slice [N] complete. Continuing to Slice [N+1]." If the slice *was* `[inspect]`-flagged but the level skipped it, say so — "Slice [N] touched [schema/auth/…]; inspection deferred to final sign-off" — so a deferral is never silent.
 
-**Final slice:** "Final slice complete. Deviations: `output/deviations/Deviations_[feature]_[date]_[HH-MM].md` ([N] logged / none). Run **inspector** — feature: [feature], final." The final sign-off runs regardless of level.
+**Final slice:** "Final slice complete. Deviations: `Plumbline/deviations/Deviations_[feature]_[date]_[HH-MM].md` ([N] logged / none). Run **inspector** — feature: [feature], final." The final sign-off runs regardless of level.
 
 **Status line** (last line of the report — a human reads the prose above, an orchestrator routes on this):
 - `SLICE_DONE: [N]` — slice green, no inspection due; ready to continue to the next slice.

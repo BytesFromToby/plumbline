@@ -22,7 +22,7 @@ Before starting, identify:
 1. **Project root** — the folder being walked
 2. **Test command** and **run/demo command** — from the project's CLAUDE.md
 3. **Specs folder** — `Planning/specs/` (the convention; fall back to `docs/specs/` if that's what the project uses)
-4. **Output folder** — `output/walkthrough/` in the project root (create it if missing). Both this run's files land here, dated.
+4. **Output folder** — `Plumbline/walkthrough/` in the project root (create it if missing). Both this run's files land here, dated.
 
 ---
 
@@ -31,7 +31,7 @@ Before starting, identify:
 - **Spec is truth.** If code disagrees with the spec, the spec wins.
 - **Autonomy is fenced by the Change rules in CLAUDE.md (Quick Path / Full Path).** Apply **Quick-Path** changes yourself (no new/removed files, no schema change, no core-logic change, nothing that needs a decision doc). **One explicit file-creation exception: new *test* files are Quick-Path** — adding a test for existing behavior changes nothing a future reader needs explained. Anything that is **Full-Path** — schema, core logic, new/renamed non-test files, decisions worth recording — goes to **Recommendations**, not applied. Do not author decision docs unattended.
 - **Run the test command after every change.** If a change breaks tests and you can't fix it within the Quick-Path fence, revert it and log to Recommendations.
-- **Log everything** to `output/walkthrough/WalkthroughLog_YYYY-MM-DD_HH-MM.md` as you go.
+- **Log everything** to `Plumbline/walkthrough/WalkthroughLog_YYYY-MM-DD_HH-MM.md` as you go.
 - **Commit nothing.** Leave all changes uncommitted for review.
 
 ---
@@ -59,7 +59,7 @@ Improve project docs for clarity: `CLAUDE.md`, `CONTEXT.md` / `REFERENCES.md`. R
 
 **Walk test — judge the contract as an agent with no memory would:**
 1. From `CLAUDE.md` plus at most two more reads, can you answer *where am I* and *where do I go for task X* (find the current spec, its blueprint, the latest inspection)?
-2. Can you state build status purely by scanning `output/` and the blueprint's checkboxes — no prose summary required?
+2. Can you state build status purely by scanning `Plumbline/` and the blueprint's checkboxes — no prose summary required?
 3. Is `CLAUDE.md` carrying content that belongs in a spec, reference, or decision doc? Move the payload to its home and leave a pointer (a doc edit — Quick-Path).
 4. Is any fact stated in two places? Pick one home; link from the other.
 
@@ -71,7 +71,7 @@ A walk-test failure that needs files moved or renamed is Full-Path — route it 
 Look for repeatable tasks worth a helper script (health checks, cross-reference validators). If you write one, create `tools/` lazily at that point (it is not pre-created). A new tool script is Full-Path — propose it in Recommendations first unless it is a trivial, self-contained check.
 
 ### Phase 6 — Recommendations
-1. **Read the deviation history first** — `output/deviations/` across all past builds. The
+1. **Read the deviation history first** — `Plumbline/deviations/` across all past builds. The
    builder model varies run to run, so don't tune grain to a model — read the trends as
    *plan-quality* signals:
    - **Dense trivial deviations** (renames, file moves, tactic swaps) → blueprints are
@@ -84,7 +84,7 @@ Look for repeatable tasks worth a helper script (health checks, cross-reference 
 
 ---
 
-## Log Format (output/walkthrough/WalkthroughLog_YYYY-MM-DD_HH-MM.md)
+## Log Format (Plumbline/walkthrough/WalkthroughLog_YYYY-MM-DD_HH-MM.md)
 
 ```
 ## Phase N — Title
@@ -98,7 +98,7 @@ Look for repeatable tasks worth a helper script (health checks, cross-reference 
 
 ---
 
-## Recommendations Format (output/walkthrough/Recommendations_YYYY-MM-DD_HH-MM.md)
+## Recommendations Format (Plumbline/walkthrough/Recommendations_YYYY-MM-DD_HH-MM.md)
 
 ```
 ## Priority: HIGH / MEDIUM / LOW

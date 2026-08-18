@@ -33,13 +33,13 @@ scaffold ──▶ architect ──▶ foreman ──▶ builder ──▶ inspe
 |-------|------|----------|
 | **scaffold** | Bootstrapping a greenfield project (run once) | The folder skeleton + a `CLAUDE.md` contract (+ `git init` in git mode) |
 | **architect** | Defining *what* to build | `Planning/specs/[feature]_spec.md` with inline acceptance criteria, a decision log |
-| **foreman** | Planning *how* to build it | `Planning/blueprints/[feature]_BP.md` — slices of ordered steps |
+| **foreman** | Planning *how* to build it | `Plumbline/blueprints/[feature]_BP.md` — slices of ordered steps |
 | **builder** | Writing the code | Code + tests, executed one slice at a time, with a deviation log |
 | **inspector** | Proving it works | An evidence report; a dated PASS/FAIL stamp on the blueprint |
 
 Each stage hands off through the filesystem. The user approves between stages — the agent does the work, the human stays the judge.
 
-By default every project starts in **git** — `scaffold` runs `git init` with the skeleton, and the log is the history from day one (decision docs carry the *why*; no manual changelog to silently fall behind). A **`none`** history mode is available for non-git workflows: scaffold skips git, and the dated artifact trail (`docs/decisions/` + `output/`) is the history — a full audit record, minus per-file diffs. A project still grows through stages — **small** (one spec, flat structure) → **big** (split specs, reference tier, architecture doc); graduating across that boundary — splitting a monolith spec, extracting the reference tier — is currently a **manual** step. (Automating it in a dedicated skill is a planned addition, not part of this version.)
+By default every project starts in **git** — `scaffold` runs `git init` with the skeleton, and the log is the history from day one (decision docs carry the *why*; no manual changelog to silently fall behind). A **`none`** history mode is available for non-git workflows: scaffold skips git, and the dated artifact trail (`Plumbline/` — decisions + reports) is the history — a full audit record, minus per-file diffs. A project still grows through stages — **small** (one spec, flat structure) → **big** (split specs, reference tier, architecture doc); graduating across that boundary — splitting a monolith spec, extracting the reference tier — is currently a **manual** step. (Automating it in a dedicated skill is a planned addition, not part of this version.)
 
 **Or hand the whole job to `homeowner`.** `homeowner` is the build-mode orchestrator — the counterpart to `walkthrough`. Give it a written brief and it runs the five stages on its own, with no human approval gate, halting only when it hits something it can't safely cross:
 
@@ -74,9 +74,9 @@ walkthrough  ── one autonomous session, fenced to safe changes ──
 
 | Skill | Owns | Produces |
 |-------|------|----------|
-| **walkthrough** | An autonomous maintenance session (no check-ins, commits nothing) | Quick-Path fixes applied + `output/walkthrough/Recommendations_YYYY-MM-DD_HH-MM.md` |
-| **surveyor** | Static spec-vs-code drift — reads and compares, never runs the software | A dated `output/surveys/Survey_YYYY-MM-DD.md` (written even when clean) |
-| **inspector** | Runtime proof against the spec — *the same skill the build lifecycle ends on* | An evidence report in `output/inspect/` |
+| **walkthrough** | An autonomous maintenance session (no check-ins, commits nothing) | Quick-Path fixes applied + `Plumbline/walkthrough/Recommendations_YYYY-MM-DD_HH-MM.md` |
+| **surveyor** | Static spec-vs-code drift — reads and compares, never runs the software | A dated `Plumbline/surveys/Survey_YYYY-MM-DD.md` (written even when clean) |
+| **inspector** | Runtime proof against the spec — *the same skill the build lifecycle ends on* | An evidence report in `Plumbline/inspect/` |
 
 `surveyor` and `inspector` also run standalone — `surveyor` before a feature or after a refactor when you just want a drift report; `inspector` to sign off a single slice. `walkthrough` is the hands-off orchestration of both, fenced by the **Change rules** in `CLAUDE.md`: it applies Quick-Path fixes itself and never authors a decision doc or touches a schema unattended.
 
@@ -148,7 +148,7 @@ that can't fail (vacuous assertion, behavior mocked away) is a finding, not a pa
 
 - **`builder` reads the spec, not just the blueprint.** If a step contradicts the spec, it stops rather than faithfully building the wrong thing — closing the "telephone game" between plan and intent.
 - **`builder` stops cleanly when stuck.** Clear rules: don't improvise a different approach, don't retry forever, never run a destructive action on the blueprint's say-so alone, and leave the codebase in a known state when you stop.
-- **Deviations are an audit trail, not a blocker.** When the build diverges from the plan in a behavior-preserving way, it's logged inline and rolled up to `output/deviations/` — visible at the end whether or not inspection runs.
+- **Deviations are an audit trail, not a blocker.** When the build diverges from the plan in a behavior-preserving way, it's logged inline and rolled up to `Plumbline/deviations/` — visible at the end whether or not inspection runs.
 - **`inspector` may stamp a result but never edit criteria.** It can record `✅ Inspector: PASS — YYYY-MM-DD HH:MM` on the blueprint; it cannot touch a step, a Done-when, or the spec to make something pass.
 - **Inspection is risk-weighted, not ritual.** `foreman` flags slices that touch schema, auth/security, destructive operations, or cross-module seams `[inspect]`; the rest flow on green tests. A build also picks an **inspection level** — inspect every slice, only the flagged ones (the default), or defer all mid-build checks to the end — so a human driving by hand isn't forced to stop at each flagged slice, while an unattended `homeowner` run always inspects them early. Whatever the level, the final sign-off is always inspected, and no `[inspect]` slice ever ships uninspected.
 - **Repairs run on rails too.** A failed inspection routes back to `builder` in **fix mode**: the report's failure items become the step list, the same stuck/deviation rules apply, and the loop always closes with re-inspection — the most fragile moment in the pipeline is governed, not improvised.
@@ -158,23 +158,23 @@ that can't fail (vacuous assertion, behavior mocked away) is a finding, not a pa
 
 ## Folder conventions
 
-**`Planning/` = the living plan · `docs/` = the record & reference · `output/` = skill output.**
+**`Planning/` = human intent (specs + reference) · `Plumbline/` = everything the workflow generates (blueprints, decisions, reports).** Code lives wherever the stack puts it, outside both.
 
 | Path | Holds |
 |------|-------|
 | `Planning/specs/[feature]_spec.md` | Specs — the source of truth |
 | `Planning/reference/` | Shared definitions specs cite (data models, constants) |
-| `Planning/blueprints/[feature]_BP.md` | Per-feature build plans (split into `_p-1`, `_p-2`, … past 10 slices) |
-| `docs/decisions/` | Decision logs (append-only) |
-| `docs/architecture.md` | The as-built system map — written once modules need one |
-| `output/inspect/` | Inspector reports + evidence |
-| `output/deviations/` | Builder deviation rollups |
-| `output/surveys/` | Surveyor drift reports (`Survey_YYYY-MM-DD_HH-MM.md`) |
-| `output/walkthrough/` | Walkthrough log + recommendations (`…_YYYY-MM-DD_HH-MM.md`) |
-| `output/homeowner/` | Homeowner run logs (`HomeownerLog_YYYY-MM-DD_HH-MM.md`) |
+| `Plumbline/blueprints/[feature]_BP.md` | Per-feature build plans (split into `_p-1`, `_p-2`, … past 10 slices) |
+| `Plumbline/decisions/` | Decision logs (append-only) |
+| `Plumbline/architecture.md` | The as-built system map — written once modules need one |
+| `Plumbline/inspect/` | Inspector reports + evidence |
+| `Plumbline/deviations/` | Builder deviation rollups |
+| `Plumbline/surveys/` | Surveyor drift reports (`Survey_YYYY-MM-DD_HH-MM.md`) |
+| `Plumbline/walkthrough/` | Walkthrough log + recommendations (`…_YYYY-MM-DD_HH-MM.md`) |
+| `Plumbline/homeowner/` | Homeowner run logs (`HomeownerLog_YYYY-MM-DD_HH-MM.md`) |
 
 `scaffold` lays the full folder skeleton up front as guide-rails and, in **git** mode (the default),
-inits git — the log is the history from day one; `docs/decisions/` carries the why. In **`none`** mode
+inits git — the log is the history from day one; `Plumbline/decisions/` carries the why. In **`none`** mode
 it skips git and the dated artifacts are the history.
 
 ---
@@ -185,7 +185,7 @@ it skips git and the dated artifacts are the history.
 
 - **Identity** — one line on what the project is and why.
 - **Stack + Commands** — the test command and the run/demo command (must be *real* — `inspector` depends on it), plus a `UI evidence tool` line for web stacks. `scaffold` makes no design decisions, so it leaves these as `[pending — architect]` placeholders; **`architect` fills them when it writes the first spec**, since the stack is a consequence of *what* gets built, not something to settle before any design exists.
-- **History** — git by default, from scaffold onward (the log is the history); a `none` mode for non-git projects uses the dated artifact trail instead. `docs/decisions/` carries the rationale either way.
+- **History** — git by default, from scaffold onward (the log is the history); a `none` mode for non-git projects uses the dated artifact trail instead. `Plumbline/decisions/` carries the rationale either way.
 - **Where things live** — the folder map, so a reader or agent orients without spelunking.
 - **Change rules** — the Quick Path / Full Path for any change (new *test* files are the one Quick-Path file-creation exception). Doctrine every skill reads, not a skill you invoke.
 - **Version stamp** — the Plumbline version the project was scaffolded under, so skill drift is detectable later.

@@ -1,6 +1,6 @@
 # Inspect Report — mdtoc · Final
 Spec: Planning/specs/mdtoc_spec.md
-Blueprint: Planning/blueprints/mdtoc_BP.md
+Blueprint: Plumbline/blueprints/mdtoc_BP.md
 Date: 2026-06-28
 Run/demo command: `python -m mdtoc <file>` (add `--insert`); tests: `python -m pytest`
 

@@ -43,7 +43,7 @@ The framework has three document classes. Treat them differently:
 
 - **Feature spec** — has `**Done when:**` items. This is what you check for drift and test backing.
 - **Reference doc** (`Planning/reference/` — glossary, data models, constants) — definitional, no Done-when. Do **not** flag it for "having nothing testable." Check only that the terms/models it defines are still the ones the code and feature specs use.
-- **Architecture doc** (`docs/architecture.md`) — the high-level map. No Done-when. Check only that the modules it describes still exist.
+- **Architecture doc** (`Plumbline/architecture.md`) — the high-level map. No Done-when. Check only that the modules it describes still exist.
 
 For each **feature spec**, identify the code area it covers from its title and `## Feature:` blocks. Build a mapping:
 
@@ -89,7 +89,7 @@ For each finding, decide the recommendation — exactly one of:
 
 ## Step 5 — Write the survey
 
-Write the report to `output/surveys/Survey_YYYY-MM-DD_HH-MM.md` (create `output/surveys/` if it doesn't exist). If the survey was scoped to a single feature, name it `Survey_[feature]_YYYY-MM-DD_HH-MM.md`. The `HH-MM` makes each run a distinct, time-ordered record — runs never overwrite.
+Write the report to `Plumbline/surveys/Survey_YYYY-MM-DD_HH-MM.md` (create `Plumbline/surveys/` if it doesn't exist). If the survey was scoped to a single feature, name it `Survey_[feature]_YYYY-MM-DD_HH-MM.md`. The `HH-MM` makes each run a distinct, time-ordered record — runs never overwrite.
 
 **Always write the file, even when clean** — a dated "no drift" record is the point. Drop any finding section that has no entries (mirrors inspector dropping empty sections).
 
@@ -127,5 +127,5 @@ Verdict: clean | N findings (Drift N · Unimplemented N · Undocumented N · Unt
 ## Step 6 — Hand off
 
 Surveyor makes no changes to code or specs — it only reports. State the verdict inline and point at the file:
-- Findings → "Survey written to `output/surveys/Survey_[date]_[HH-MM].md` — [N] findings. Run **architect** to reconcile the spec, or fix the code under the Change rules."
-- Clean → "Survey written to `output/surveys/Survey_[date]_[HH-MM].md` — spec and code agree, no drift found."
+- Findings → "Survey written to `Plumbline/surveys/Survey_[date]_[HH-MM].md` — [N] findings. Run **architect** to reconcile the spec, or fix the code under the Change rules."
+- Clean → "Survey written to `Plumbline/surveys/Survey_[date]_[HH-MM].md` — spec and code agree, no drift found."

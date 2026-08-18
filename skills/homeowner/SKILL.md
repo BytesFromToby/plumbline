@@ -40,8 +40,8 @@ Phase 3 spec review in its place.
 ## Execution Order
 
 **Run start — open the log first.** Before any phase, open
-`output/homeowner/HomeownerLog_YYYY-MM-DD_HH-MM.md` and record the brief verbatim (create
-`output/homeowner/` if absent — on a greenfield run it won't exist until Phase 1 scaffolds it).
+`Plumbline/homeowner/HomeownerLog_YYYY-MM-DD_HH-MM.md` and record the brief verbatim (create
+`Plumbline/homeowner/` if absent — on a greenfield run it won't exist until Phase 1 scaffolds it).
 Every phase appends to this log; opening it first means even a Phase 1 or Phase 2 halt is captured.
 
 ### Phase 1 — Scaffold (greenfield only)
@@ -78,7 +78,7 @@ against; non-blocking) or **Open Questions** (genuine forks it couldn't safely d
 
 **It produces:**
 - `Planning/specs/[feature]_spec.md`
-- `docs/decisions/[feature]_YYYY-MM-DD.md`
+- `Plumbline/decisions/[feature]_YYYY-MM-DD.md`
 - a **status** reported back to you.
 
 **Route on the returned status — do not read the spec to second-guess it:**
@@ -137,7 +137,7 @@ invisible.
 
 A spec can be both faithful and too-big; `TOO_BIG` wins (halt). **Only `FAITHFUL` proceeds.**
 
-**Then log the verdict.** Append to the run log `output/homeowner/HomeownerLog_YYYY-MM-DD_HH-MM.md`. The
+**Then log the verdict.** Append to the run log `Plumbline/homeowner/HomeownerLog_YYYY-MM-DD_HH-MM.md`. The
 verdict and its reasoning are the auditable record of the gate Homeowner stood in for. The skeleton
 below is the **whole run's** log format — every phase appends its block as it completes.
 
@@ -165,7 +165,7 @@ Verdict: FAITHFUL | DRIFTED | TOO_BIG
 
 ## Phase 4 — Blueprint
 Foreman status: BLUEPRINT_READY | BLUEPRINT_BLOCKED: <reason>
-Blueprint: Planning/blueprints/[feature]_BP.md  (or part files _p-1, _p-2, …)
+Blueprint: Plumbline/blueprints/[feature]_BP.md  (or part files _p-1, _p-2, …)
 - Slices: [count; which are [inspect]-flagged]
 [On BLUEPRINT_BLOCKED: the reason verbatim, and whether it's a contract gap or a Phase-3 gate miss.]
 
@@ -174,12 +174,12 @@ Inspection level: flagged
 - Slice [N] [inspect]: PASS | FAIL → fixed (cycle k of K) → PASS | HALTED after K cycles
   [one line per inspected slice]
 Builder final status: BUILD_COMPLETE | STUCK: <where/why> | HALTED: <slice, reason>
-Deviations: output/deviations/Deviations_[feature]_[date]_[HH-MM].md ([N] / none)
+Deviations: Plumbline/deviations/Deviations_[feature]_[date]_[HH-MM].md ([N] / none)
 [On STUCK / HALTED: exactly what a human must resolve before resuming.]
 
 ## Phase 6 — Independent sign-off
 Inspector (fresh subagent) status: PASS · needs-human: [Z] | FAIL: [N] → fixed (cycle k of 3) → PASS | HALTED | BLOCKED: <reason>
-Final report: output/inspect/Inspect_[feature]_Final_[date]_[HH-MM].md
+Final report: Plumbline/inspect/Inspect_[feature]_Final_[date]_[HH-MM].md
 - Automated: [X] passed / [Y] failed
 - Human sign-off owed: [Z] items (listed in the report)
 Blueprint: Fully inspected [x]
@@ -200,7 +200,7 @@ back.
 (Foreman reads `CLAUDE.md` itself for the stack and the real test command — you don't supply those.)
 
 **It produces:**
-- `Planning/blueprints/[feature]_BP.md` — or, for a build over 10 slices, the part files
+- `Plumbline/blueprints/[feature]_BP.md` — or, for a build over 10 slices, the part files
   `[feature]_BP_p-1.md`, `[feature]_BP_p-2.md`, … (foreman splits mechanically; this is **not** a
   halt — a long build is just a long build),
 - a **status** reported back to you.
@@ -289,7 +289,7 @@ of any Phase 5 mid-build inspection. Pass it the feature, `final`, and the run/d
 reads the spec, searches the blueprint parts for what's owed, and reads `CLAUDE.md` itself).
 
 It verifies every spec Done-when item, judges test fidelity, captures evidence, writes
-`output/inspect/Inspect_[feature]_Final_[date]_[HH-MM].md`, and — on a clean pass — ticks the
+`Plumbline/inspect/Inspect_[feature]_Final_[date]_[HH-MM].md`, and — on a clean pass — ticks the
 blueprint's **Fully inspected** box. (Homeowner ran Phase 5 at `flagged`, so every `[inspect]` slice
 already carries a PASS stamp; the inspector's deferred-sweep finds nothing owed.)
 
@@ -323,7 +323,7 @@ End every run — signed off or halted — with a **short summary and the links*
 
 **Always:**
 - **Outcome**, one line: `SIGNED OFF` (pending [Z] human items), or `HALTED at Phase [N] — [why]`.
-- **Run log:** `output/homeowner/HomeownerLog_[date]_[HH-MM].md` — the full phase-by-phase trail.
+- **Run log:** `Plumbline/homeowner/HomeownerLog_[date]_[HH-MM].md` — the full phase-by-phase trail.
 
 **On `SIGNED OFF`, give the deliverable at a glance:**
 - **Files created / changed by the build** — in **git** mode, from the sign-off commit: `git diff --stat --name-status <scaffold-commit>..HEAD` (run *after* the commit above — `git diff` against the working tree alone misses the still-untracked build files, which is exactly why the build is committed first). In **none** mode (no git), aggregate the **Files written/modified** that builder reported at each slice — that is the build's own record.
@@ -331,7 +331,7 @@ End every run — signed off or halted — with a **short summary and the links*
 - **Inspection issues:** `none` for a clean PASS — otherwise note what wasn't clean: weak-fidelity tests that were fixed, slices that needed fix cycles, or anything still owed.
 - **Human sign-off owed:** the [Z] `[human-required]` items, listed — these are the human's to verify (`none` if zero).
 - **Assumptions to confirm:** the low-surprise defaults architect made (Phase 2 `ASSUMPTIONS`), so the human can override any before relying on the build (`none` if zero).
-- **Deviations:** [N] logged (`output/deviations/…`) or none · **Final inspection:** `output/inspect/Inspect_[feature]_Final_[date]_[HH-MM].md`.
+- **Deviations:** [N] logged (`Plumbline/deviations/…`) or none · **Final inspection:** `Plumbline/inspect/Inspect_[feature]_Final_[date]_[HH-MM].md`.
 
 **On `HALTED`, give the resume path instead** (no file list — the deliverable isn't done):
 - Which phase halted and the failing status verbatim (Open Questions · builder `STUCK` · `HALTED` after the fix bound · inspector `BLOCKED`).

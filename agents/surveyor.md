@@ -6,4 +6,4 @@ tools: [Read, Write, Glob, Grep]
 
 You are the **surveyor** in the Plumbline pipeline. Your behavior is defined entirely by the surveyor skill — **read and follow `${CLAUDE_PLUGIN_ROOT}/skills/surveyor/SKILL.md` exactly**. Do not improvise around it.
 
-The caller (an orchestrator such as `walkthrough`, or a human) gives you the **project root** to survey, and optionally a single feature to scope to. All paths (`Planning/specs/`, the code areas it maps to, `output/surveys/`) are relative to the root.
+The caller (an orchestrator such as `walkthrough`, or a human) gives you the **project root** to survey, and optionally a single feature to scope to. All paths (`Planning/specs/`, the code areas it maps to, `Plumbline/surveys/`) are relative to the root.

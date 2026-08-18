@@ -174,7 +174,7 @@ An already-filled contract (an existing project, a later feature) — leave it u
 
 ## Step 4 — Write the decision log
 
-Write `docs/decisions/[feature]_YYYY-MM-DD.md`:
+Write `Plumbline/decisions/[feature]_YYYY-MM-DD.md`:
 
 ```
 # Decisions: [Feature Name]
@@ -232,7 +232,7 @@ Architect produces artifacts and reports a status. **It never invokes the next s
 
 **Interview mode** — tell the user:
 1. Review the spec at `Planning/specs/[feature]_spec.md`
-2. Review decisions at `docs/decisions/[feature]_YYYY-MM-DD.md`
+2. Review decisions at `Plumbline/decisions/[feature]_YYYY-MM-DD.md`
 3. Resolve any Open Questions before proceeding
 4. (First spec on a fresh scaffold: confirm the Stack/Commands you filled in `CLAUDE.md`)
 5. Run **foreman** to generate the blueprint from this spec
@@ -240,7 +240,7 @@ Architect produces artifacts and reports a status. **It never invokes the next s
 **Autonomous mode** — emit a routable status, then stop. **Do not review your own spec or call foreman** — the spec review and the next-stage call are the orchestrator's job (convention-coupled, not call-coupled). Report:
 
 - **Spec:** `Planning/specs/[feature]_spec.md`
-- **Decision log:** `docs/decisions/[feature]_YYYY-MM-DD.md`
+- **Decision log:** `Plumbline/decisions/[feature]_YYYY-MM-DD.md`
 - **Contract:** if this was the first spec on a fresh scaffold, note you filled CLAUDE.md's pending Stack/Commands (Step 3b).
 - **Status:**
   - `READY` — structural self-check passed; no Assumptions and no Open Questions, **or**
