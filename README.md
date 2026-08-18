@@ -128,7 +128,7 @@ And it's checked. `tools/audit.py` verifies every skill and agent against the co
 
 ## Version
 
-**v1.0** — each skill carries a `version:` in its frontmatter, and every scaffolded project's `CLAUDE.md` records the version it was born under, so a project can tell when the skills have moved on without it.
+**v1.1** — adds brownfield `adopt` and reorganizes generated output under a single `Plumbline/` folder. Each skill carries a `version:` in its frontmatter, and every scaffolded project's `CLAUDE.md` records the version it was born under, so a project can tell when the skills have moved on without it.
 
 ## License
 
